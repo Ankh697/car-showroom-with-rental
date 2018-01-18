@@ -1,6 +1,5 @@
 package com.rental.carshowroom.controller;
 
-import com.rental.carshowroom.exception.NotFoundException;
 import com.rental.carshowroom.model.User;
 import com.rental.carshowroom.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +35,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody @Valid User user) throws NotFoundException {
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody @Valid User user) {
         Map<String, String> errors = userService.validateUpdateUser(user, id);
         if (errors.isEmpty()) {
             return ResponseEntity.ok(userService.updateUser(user, id));
@@ -45,7 +44,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, String>> deleteCar(@PathVariable Long id) throws NotFoundException {
+    public ResponseEntity<Map<String, String>> deleteCar(@PathVariable Long id) {
         Map<String, String> errors = userService.validateDeleteUser(id);
         if (errors.isEmpty()) {
             userService.deleteUser(id);
@@ -54,7 +53,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUser(@PathVariable Long id) throws NotFoundException {
+    public ResponseEntity<User> getUser(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getUser(id));
     }
 }

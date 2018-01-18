@@ -8,7 +8,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @MappedSuperclass
 @Data
@@ -26,11 +26,13 @@ public class AbstractEntity {
 
     @CreatedDate
     @Column(name = "created_at", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     @JsonIgnore
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private Date createdAt = new Date();
 
     @LastModifiedDate
     @Column(name = "updated_at")
+    @Temporal(TemporalType.TIMESTAMP)
     @JsonIgnore
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    private Date updatedAt = new Date();
 }

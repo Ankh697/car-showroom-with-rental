@@ -9,19 +9,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
-@PropertySource("classpath:validation_messages.properties")
+@PropertySource("classpath:validationmessages.properties")
 public class UserService {
     private final String USERNAME_KEY = "username";
 
-    @Value("msg.validation.user.username.notunique")
+    @Value("${msg.validation.user.username.notunique}")
     private String usernameNotUnique;
 
-    @Value("msg.validation.user.username.noteditable")
+    @Value("${msg.validation.user.username.noteditable}")
     private String usernameNotEditable;
 
     private UserRepository userRepository;
@@ -36,7 +36,7 @@ public class UserService {
     }
 
     public Map<String, String> validateAddUser(User user) {
-        Map<String, String> errors = Collections.emptyMap();
+        Map<String, String> errors = new LinkedHashMap<>();
         validateUsernameEquality(user, errors);
         return errors;
     }
@@ -57,18 +57,18 @@ public class UserService {
     }
 
     public Map<String, String> validateUpdateUser(User user, Long id) {
-        Map<String, String> errors = Collections.emptyMap();
+        Map<String, String> errors = new LinkedHashMap<>();
         validateUsernameEdited(user, id, errors);
         return errors;
     }
 
-    private void validateUsernameEdited(User user, Long id, Map<String, String> errors) throws NotFoundException {
+    private void validateUsernameEdited(User user, Long id, Map<String, String> errors) {
         if(!user.getUsername().equals(findUser(id).getUsername())) {
             errors.put(USERNAME_KEY, usernameNotEditable);
         }
     }
 
-    private User findUser(Long id) throws NotFoundException {
+    private User findUser(Long id) {
         User user = userRepository.findOne(id);
         if(user != null) {
             return user;
@@ -78,12 +78,12 @@ public class UserService {
         }
     }
 
-    public User getUser(Long id) throws NotFoundException {
+    public User getUser(Long id) {
         return findUser(id);
     }
 
-    public Map<String, String> validateDeleteUser(Long id) throws NotFoundException {
-        Map<String, String> errors = Collections.emptyMap();
+    public Map<String, String> validateDeleteUser(Long id) {
+        Map<String, String> errors = new LinkedHashMap<>();
         findUser(id); //will be changed after implement security
         return errors;
     }

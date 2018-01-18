@@ -18,11 +18,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
-@PropertySource("classpath:validation_messages.properties")
+@PropertySource("classpath:validationmessages.properties")
 @ControllerAdvice
 @Component
 public class GlobalExceptionHandler {
@@ -46,7 +45,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public Map<String, String> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
-        Map<String, String> response = new HashMap<>();
+        Map<String, String> response = new LinkedHashMap<>();
         response.put(errorKey, wrongJsonSyntaxError);
         return response;
     }
@@ -55,7 +54,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public Map<String, String> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        Map<String, String> response = new HashMap<>();
+        Map<String, String> response = new LinkedHashMap<>();
         BindingResult errors = e.getBindingResult();
         for (FieldError fieldError : errors.getFieldErrors()) {
             response.put(fieldError.getField(), fieldError.getDefaultMessage());
@@ -85,7 +84,7 @@ public class GlobalExceptionHandler {
     }
 
     private Map<String, String> buildResponseMap(String key, String value) {
-        Map<String, String> response = Collections.emptyMap();
+        Map<String, String> response = new LinkedHashMap<>();
         response.put(key, value);
         return response;
     }
