@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -24,19 +25,20 @@ import javax.validation.constraints.Pattern;
 public class Car extends AbstractEntity {
     @NotNull
     private String model;
+    @Min(1900)
     private Integer productionYear;
     @Min(0)
     private Long whichOwner;
     @Min(0)
     private Long mileage;
 
-    @NotNull
+    @NotBlank
     @Pattern(regexp = Patterns.VIN, message = "{msg.validation.car.vin.pattern}")
     private String VIN;
-    @NotNull
+    @NotBlank
     private String numberPlate;
 
-    @NotNull
+    @NotBlank
     private String color;
 
     @Max(Long.MAX_VALUE)

@@ -5,13 +5,13 @@ import com.rental.carshowroom.exception.enums.NotFoundExceptionCode;
 import com.rental.carshowroom.model.Car;
 import com.rental.carshowroom.model.enums.CarStatus;
 import com.rental.carshowroom.repository.CarRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 @Service
 @PropertySource("classpath:validationmessages.properties")
@@ -53,24 +53,17 @@ public class CarService {
         return carRepository.save(car);
     }
 
-    public String deleteCar(Long id) {
+    public void deleteCar(Long id) {
+        checkCarExist(id);
         carRepository.delete(id);
-        return "Car deleted";
     }
 
     public List<Car> findAllAviableCarsToLeaseOrBuy() {
-        return carRepository.findAll().stream()
-                .filter(car -> car.getStatus()
-                        == CarStatus.LEASED
-                        || car.getStatus() == CarStatus.LEASED
-                        || car.getStatus() == CarStatus.USED_FOR_SALE)
-                .collect(Collectors.toList());
+        return carRepository.findAllByStatus(CarStatus.FOR_SALE);
     }
 
     public List<Car> findAllAvaibleCarsToRent() {
-        return carRepository.findAll().stream()
-                .filter(car -> car.getStatus() == CarStatus.FOR_RENT)
-                .collect(Collectors.toList());
+        return carRepository.findAllByStatus(CarStatus.FOR_RENT);
     }
 
 
@@ -80,11 +73,16 @@ public class CarService {
         return carRepository.save(car);
     }
 
-
     public Car updateStatus(Long id, Car c) {
         Car car = findCar(id);
         car.setStatus(c.getStatus());
         return carRepository.save(car);
+    }
+
+    public Map<String, String> validateDeleteOrUpdateCar(Long id) {
+        Map<String, String> errors = new LinkedHashMap<>();
+        findCar(id);
+        return errors;
     }
 
 
