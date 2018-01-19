@@ -53,7 +53,7 @@ public class CarService {
         return carRepository.save(car);
     }
 
-    public void deleteCar(Long id) {
+    public void deleteCar(Long id) throws NotFoundException {
         checkCarExist(id);
         carRepository.delete(id);
     }
@@ -67,7 +67,7 @@ public class CarService {
     }
 
 
-    public Car updateCar(Car car, Long id) {
+    public Car updateCar(Car car, Long id) throws NotFoundException {
         checkCarExist(id);
         car.setId(id);
         return carRepository.save(car);
@@ -79,7 +79,7 @@ public class CarService {
         return carRepository.save(car);
     }
 
-    public Map<String, String> validateDeleteOrUpdateCar(Long id) {
+    public Map<String, String> validateDeleteOrUpdateCar(Long id) throws NotFoundException {
         Map<String, String> errors = new LinkedHashMap<>();
         findCar(id);
         return errors;

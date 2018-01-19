@@ -57,7 +57,8 @@ public class CarController {
         if (errors.isEmpty()) {
             carService.deleteCar(id);
             return ResponseEntity.noContent().build();
-        } else return ResponseEntity.badRequest().body(errors);
+        }
+        return ResponseEntity.badRequest().body(errors);
     }
 
 }

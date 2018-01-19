@@ -12,7 +12,6 @@ import org.hibernate.validator.constraints.NotBlank;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -23,7 +22,7 @@ import javax.validation.constraints.Pattern;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Car extends AbstractEntity {
-    @NotNull
+    @NotBlank
     private String model;
     @Min(1900)
     private Integer productionYear;
@@ -32,21 +31,19 @@ public class Car extends AbstractEntity {
     @Min(0)
     private Long mileage;
 
-    @NotBlank
+    @NotNull
     @Pattern(regexp = Patterns.VIN, message = "{msg.validation.car.vin.pattern}")
-    private String VIN;
+    private String vin;
     @NotBlank
     private String numberPlate;
 
     @NotBlank
     private String color;
 
-    @Max(Long.MAX_VALUE)
     @Min(0)
     @NotNull
     private Long priceNetto;
 
-    @Max(Long.MAX_VALUE)
     @Min(0)
     @NotNull
     private Long priceBrutto;
@@ -59,15 +56,12 @@ public class Car extends AbstractEntity {
 
     @Enumerated(EnumType.STRING)
     @NotNull
-    private CarStatus status;
+    private CarStatus status = CarStatus.DISACTIVE;
 
     @Enumerated(EnumType.STRING)
     @NotNull
     private Petrol petrol;
 
-    @Enumerated(EnumType.STRING)
-    @NotNull
-    private CarStatus carStatus = CarStatus.DISACTIVE;
 
 
 }
