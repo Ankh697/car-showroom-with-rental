@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@PropertySource("classpath:validation_messages.properties")
+@PropertySource("classpath:validationmessages.properties")
 public class CarService {
 
     private CarRepository carRepository;

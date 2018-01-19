@@ -8,33 +8,45 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.time.LocalDateTime;
 
 @EqualsAndHashCode(callSuper = true)
+@Entity(name = "cars")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Car extends AbstractEntity {
+    @NotNull
     private String model;
     private Integer productionYear;
+    @Min(0)
     private Long whichOwner;
+    @Min(0)
     private Long mileage;
 
-    @Pattern(regexp ="/^(?<wmi>[A-HJ-NPR-Z\\d]{3})(?<vds>[A-HJ-NPR-Z\\d]{5})(?<check>[\\dX])(?<vis>(?<year>[A-HJ-NPR-Z\\d])(?<plant>[A-HJ-NPR-Z\\d])(?<seq>[A-HJ-NPR-Z\\d]{6}))$/", message = "Invalid VIN!")
+    @NotNull
+    @Pattern(regexp = Patterns.VIN, message = "{msg.validation.car.vin.pattern}")
     private String VIN;
     @NotNull
-    private String registrationNumber;
+    private String numberPlate;
 
+    @NotNull
     private String color;
+
+    @Max(Long.MAX_VALUE)
+    @Min(0)
     @NotNull
-    @Pattern(regexp = "\\d{1,3}(?:[.,]\\d{3})*(?:[.,]\\d{2})?", message = "Type the price netto!")
     private Long priceNetto;
+
+    @Max(Long.MAX_VALUE)
+    @Min(0)
     @NotNull
-    @Pattern(regexp = "\\d{1,3}(?:[.,]\\d{3})*(?:[.,]\\d{2})?", message = "Type the price brutto!")
     private Long priceBrutto;
 
     @NotNull
@@ -51,7 +63,9 @@ public class Car extends AbstractEntity {
     @NotNull
     private Petrol petrol;
 
-
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    private CarStatus carStatus = CarStatus.DISACTIVE;
 
 
 }
