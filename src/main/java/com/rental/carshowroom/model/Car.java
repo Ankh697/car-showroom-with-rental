@@ -15,6 +15,7 @@ import javax.persistence.Enumerated;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.math.BigDecimal;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity(name = "cars")
@@ -42,11 +43,11 @@ public class Car extends AbstractEntity {
 
     @Min(0)
     @NotNull
-    private Long priceNetto;
+    private BigDecimal priceNetto;
 
     @Min(0)
     @NotNull
-    private Long priceBrutto;
+    private BigDecimal priceBrutto;
 
     @NotNull
     private Long engineCapacity;

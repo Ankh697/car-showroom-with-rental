@@ -1,48 +1,51 @@
-/*
 package com.rental.carshowroom.model;
 
 
 import com.rental.carshowroom.model.enums.LeasingStatus;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.ManyToOne;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
-@Entity(name = "leasing")
+@Entity(name = "leasings")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Leasing {
-    @Id
-    @GeneratedValue
-    private Long id;
+@Builder
+public class Leasing extends AbstractEntity {
 
     @ManyToOne
     private Car car;
 
     @Min(1)
     @NotNull
-    private Long pricePerOneInstallment;
+    private BigDecimal pricePerOneInstallment;
 
-    @Enumerated(EnumType.STRING)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @NotNull
-    @Pattern(regexp = Patterns.DATE) //TODO MESSAGE
-    private LocalDateTime startOfLease;
+    private LocalDate startOfLease;
 
-    @Enumerated(EnumType.STRING)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @NotNull
-    @Pattern(regexp = Patterns.DATE) //TODO MESSAGE
-    private LocalDateTime endOfLease;
+    private LocalDate endOfLease;
 
     @Enumerated(EnumType.STRING)
     @NotNull
     private LeasingStatus leasingStatus = LeasingStatus.WAITING;
 
+    @Min(24)
+    @NotNull
+    private Long installment;
+
 
 }
-*/

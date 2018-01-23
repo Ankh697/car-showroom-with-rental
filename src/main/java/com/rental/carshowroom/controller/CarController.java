@@ -61,7 +61,7 @@ public class CarController {
         return ResponseEntity.badRequest().body(errors);
     }
 
-    @PatchMapping("/editStatus/{id}")
+    @PatchMapping("/status/{id}")
     public ResponseEntity<Car> editCarStatus(@RequestBody @Valid Car car, @PathVariable Long id)
     {
         return ResponseEntity.ok(carService.updateStatus(car.getStatus(),id));
