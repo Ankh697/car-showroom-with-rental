@@ -1,4 +1,4 @@
-package com.rental.carshowroom.controller;
+package com.rental.carshowroom.CarController;
 
 import com.rental.carshowroom.model.Car;
 import com.rental.carshowroom.service.CarService;
@@ -15,6 +15,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/car")
 public class CarController {
+
     private CarService carService;
 
     @Autowired
@@ -49,12 +50,12 @@ public class CarController {
         return ResponseEntity.ok(carService.findAllAvaibleCarsToRent());
     }
 
-    @PutMapping("/id")
+    @PutMapping("/{id}")
     public ResponseEntity<Car> updateCar(@PathVariable Long id, @RequestBody @Valid Car car) {
         return ResponseEntity.ok(carService.updateCar(car, id));
     }
 
-    @DeleteMapping("/id")
+    @DeleteMapping("/{id}")
     public ResponseEntity deleteCar(@PathVariable Long id) {
         carService.deleteCar(id);
         return ResponseEntity.noContent().build();
@@ -67,6 +68,12 @@ public class CarController {
             return ResponseEntity.badRequest().body(errors);
         }
         return ResponseEntity.ok(carService.buyCar(id));
+    }
+
+    @PatchMapping("/status/{id}")
+    public ResponseEntity<Car> editCarStatus(@RequestBody @Valid Car car, @PathVariable Long id)
+    {
+        return ResponseEntity.ok(carService.updateStatus(car.getStatus(),id));
     }
 
 }
