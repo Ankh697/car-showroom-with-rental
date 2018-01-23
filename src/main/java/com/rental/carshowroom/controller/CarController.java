@@ -1,4 +1,4 @@
-package com.rental.carshowroom.CarController;
+package com.rental.carshowroom.controller;
 
 import com.rental.carshowroom.model.Car;
 import com.rental.carshowroom.service.CarService;
@@ -73,7 +73,7 @@ public class CarController {
     @PatchMapping("/status/{id}")
     public ResponseEntity<Car> editCarStatus(@RequestBody @Valid Car car, @PathVariable Long id)
     {
-        return ResponseEntity.ok(carService.updateStatus(car.getStatus(),id));
+        return ResponseEntity.ok(carService.updateCarStatus(id, car.getStatus()));
     }
 
 }
