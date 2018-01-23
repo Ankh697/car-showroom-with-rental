@@ -1,4 +1,4 @@
-package com.rental.carshowroom.CarController;
+package com.rental.carshowroom.controller;
 
 import com.rental.carshowroom.model.Car;
 import com.rental.carshowroom.service.CarService;
@@ -46,12 +46,12 @@ public class CarController {
         return ResponseEntity.ok(carService.findAllAvaibleCarsToRent());
     }
 
-    @PutMapping("/id")
+    @PutMapping("/{id}")
     public ResponseEntity<Car> updateCar(@PathVariable Long id, @RequestBody @Valid Car car) {
         return ResponseEntity.ok(carService.updateCar(car, id));
     }
 
-    @DeleteMapping("/id")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, String>> deleteCar(@PathVariable Long id) {
         Map<String, String> errors = carService.validateDeleteOrUpdateCar(id);
         if (errors.isEmpty()) {
@@ -59,6 +59,12 @@ public class CarController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.badRequest().body(errors);
+    }
+
+    @PatchMapping("/editStatus/{id}")
+    public ResponseEntity<Car> editCarStatus(@RequestBody @Valid Car car, @PathVariable Long id)
+    {
+        return ResponseEntity.ok(carService.updateStatus(car.getStatus(),id));
     }
 
 }

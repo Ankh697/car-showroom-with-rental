@@ -73,9 +73,9 @@ public class CarService {
         return carRepository.save(car);
     }
 
-    public Car updateStatus(Long id, Car c) {
+    public Car updateStatus(CarStatus carStatus, Long id) {
         Car car = findCar(id);
-        car.setStatus(c.getStatus());
+        car.setStatus(carStatus);
         return carRepository.save(car);
     }
 
@@ -84,7 +84,6 @@ public class CarService {
         findCar(id);
         return errors;
     }
-
 
 
 }
