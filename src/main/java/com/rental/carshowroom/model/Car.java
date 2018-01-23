@@ -3,15 +3,10 @@ package com.rental.carshowroom.model;
 
 import com.rental.carshowroom.model.enums.CarStatus;
 import com.rental.carshowroom.model.enums.Petrol;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.validator.constraints.NotBlank;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -21,7 +16,11 @@ import javax.validation.constraints.Pattern;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Car extends AbstractEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
     @NotBlank
     private String model;
     @Min(1900)
@@ -42,11 +41,11 @@ public class Car extends AbstractEntity {
 
     @Min(0)
     @NotNull
-    private Long priceNetto;
+    private Double priceNetto;
 
     @Min(0)
     @NotNull
-    private Long priceBrutto;
+    private Double priceBrutto;
 
     @NotNull
     private Long engineCapacity;
@@ -61,7 +60,6 @@ public class Car extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     @NotNull
     private Petrol petrol;
-
 
 
 }

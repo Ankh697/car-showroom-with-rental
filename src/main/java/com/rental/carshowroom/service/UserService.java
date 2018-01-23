@@ -5,25 +5,14 @@ import com.rental.carshowroom.exception.enums.NotFoundExceptionCode;
 import com.rental.carshowroom.model.User;
 import com.rental.carshowroom.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @PropertySource("classpath:validationmessages.properties")
 public class UserService {
-    private final String USERNAME_KEY = "username";
-
-    @Value("${msg.validation.user.username.notunique}")
-    private String usernameNotUnique;
-
-    @Value("${msg.validation.user.username.noteditable}")
-    private String usernameNotEditable;
-
     private UserRepository userRepository;
 
     @Autowired
@@ -35,18 +24,6 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Map<String, String> validateAddUser(User user) {
-        Map<String, String> errors = new LinkedHashMap<>();
-        validateUsernameEquality(user, errors);
-        return errors;
-    }
-
-    private void validateUsernameEquality(User user, Map<String, String> errors) {
-        if (userRepository.existsByUsername(user.getUsername())) {
-            errors.put(USERNAME_KEY, usernameNotUnique);
-        }
-    }
-
     public List<User> listAllUsers() {
         return userRepository.findAll();
     }
@@ -56,36 +33,17 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Map<String, String> validateUpdateUser(User user, Long id) {
-        Map<String, String> errors = new LinkedHashMap<>();
-        validateUsernameEdited(user, id, errors);
-        return errors;
-    }
-
-    private void validateUsernameEdited(User user, Long id, Map<String, String> errors) {
-        if(!user.getUsername().equals(findUser(id).getUsername())) {
-            errors.put(USERNAME_KEY, usernameNotEditable);
-        }
-    }
-
-    private User findUser(Long id) {
+    private User findUser(Long id) throws NotFoundException {
         User user = userRepository.findOne(id);
-        if(user != null) {
+        if (user != null) {
             return user;
-        }
-        else {
+        } else {
             throw new NotFoundException(NotFoundExceptionCode.USER_NOT_FOUND);
         }
     }
 
-    public User getUser(Long id) {
+    public User getUser(Long id) throws NotFoundException {
         return findUser(id);
-    }
-
-    public Map<String, String> validateDeleteUser(Long id) {
-        Map<String, String> errors = new LinkedHashMap<>();
-        findUser(id); //will be changed after implement security
-        return errors;
     }
 
     public void deleteUser(Long id) {

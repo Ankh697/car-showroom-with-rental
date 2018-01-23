@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public enum NotFoundExceptionCode {
     CAR_NOT_FOUND("msg.validation.car.notfound"),
-    USER_NOT_FOUND("msg.validation.user.notfound");
+    USER_NOT_FOUND("msg.validation.user.notfound"),
+    PAYMENT_NOT_FOUND("msg.validation.payment.notfound"),
+    SALE_NOT_FOUND("msg.validation.sale.notfound");
 
     private String descriptionProperty;
 
