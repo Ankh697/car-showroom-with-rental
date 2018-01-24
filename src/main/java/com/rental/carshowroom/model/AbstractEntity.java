@@ -1,36 +1,33 @@
 package com.rental.carshowroom.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
 
 @MappedSuperclass
-@Getter
+@Data
 @ToString
 @EqualsAndHashCode
-public class AbstractEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private final Long id;
-
-    protected AbstractEntity() {
-        this.id = null;
-    }
-
+@NoArgsConstructor
+public abstract class AbstractEntity {
     @CreatedDate
     @Column(name = "created_at", nullable = false)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @JsonIgnore
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @LastModifiedDate
     @Column(name = "updated_at")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @JsonIgnore
     private LocalDateTime updatedAt = LocalDateTime.now();
 }
