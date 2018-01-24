@@ -29,8 +29,8 @@ public class UserService {
     }
 
     public User updateUser(User user, Long id) {
-        user.setId(id);
-        return userRepository.save(user);
+        userRepository.updateUser(id, user.getNameAndSurname(), user.getPesel(), user.getStatus());
+        return userRepository.findOne(id);
     }
 
     private User findUser(Long id) throws NotFoundException {

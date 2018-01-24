@@ -12,8 +12,8 @@ import javax.validation.constraints.Size;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "users",
-        indexes = {@Index(name = "index_id", columnList = "id", unique = true), @Index(name = "index_username", columnList = "username", unique = true)},
-        uniqueConstraints={@UniqueConstraint(columnNames={"username"})})
+        indexes = {@Index(name = "index_id", columnList = "id", unique = true), @Index(name = "index_username", columnList = "username")},
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"username"}, name = "username")})
 @Data
 @Builder
 @NoArgsConstructor

@@ -19,7 +19,7 @@ import java.util.Map;
 @Service
 @PropertySource("classpath:validationmessages.properties")
 public class CarService {
-    private final String STATUS_KEY = "status";
+    private final String STATUS_KEY = "userStatus";
 
     @Value("${msg.validation.car.notforsale")
     private String carNotForSale;
@@ -81,9 +81,8 @@ public class CarService {
     }
 
     public Car updateCarStatus(Long id, CarStatus status) {
-        Car car = findCar(id);
-        car.setStatus(status);
-        return carRepository.save(car);
+        carRepository.updateStatus(id, status);
+        return carRepository.findOne(id);
     }
 
     public Map<String, String> validateBuy(Long id) throws NotFoundException {
