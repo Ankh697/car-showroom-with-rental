@@ -21,7 +21,7 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@SpringBootTest(classes = {CarShowroomApplication.class}, webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@SpringBootTest(classes = {CarShowroomApplication.class})
 public class UserServiceIntegrationTest {
     @Autowired
     private UserRepository userRepository;
