@@ -5,8 +5,10 @@ import com.rental.carshowroom.service.CarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +35,9 @@ public class CarController {
 
     @PostMapping
     public ResponseEntity<Car> addCar(@RequestBody @Valid Car car) {
-        return ResponseEntity.ok(carService.addCar(car));
+        Car addedCar = carService.addCar(car);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(addedCar.getId()).toUri();
+        return ResponseEntity.created(location).body(addedCar);
     }
 
     @GetMapping("/buy")
@@ -52,19 +56,24 @@ public class CarController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, String>> deleteCar(@PathVariable Long id) {
-        Map<String, String> errors = carService.validateDeleteOrUpdateCar(id);
-        if (errors.isEmpty()) {
-            carService.deleteCar(id);
-            return ResponseEntity.noContent().build();
+    public ResponseEntity deleteCar(@PathVariable Long id) {
+        carService.deleteCar(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/buy/{id}")
+    public ResponseEntity<?> buyCar(@PathVariable Long id) {
+        Map<String, String> errors = carService.validateBuy(id);
+        if (!errors.isEmpty()) {
+            return ResponseEntity.badRequest().body(errors);
         }
-        return ResponseEntity.badRequest().body(errors);
+        return ResponseEntity.ok(carService.buyCar(id));
     }
 
     @PatchMapping("/status/{id}")
     public ResponseEntity<Car> editCarStatus(@RequestBody @Valid Car car, @PathVariable Long id)
     {
-        return ResponseEntity.ok(carService.updateStatus(car.getStatus(),id));
+        return ResponseEntity.ok(carService.updateCarStatus(id, car.getStatus()));
     }
 
 }

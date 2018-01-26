@@ -5,10 +5,11 @@ import com.rental.carshowroom.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user")
@@ -21,12 +22,10 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addUser(@RequestBody @Valid User user) {
-        Map<String, String> errors = userService.validateAddUser(user);
-        if (errors.isEmpty()) {
-            return ResponseEntity.ok(userService.addUser(user));
-        }
-        return ResponseEntity.badRequest().body(errors);
+    public ResponseEntity<User> addUser(@RequestBody @Valid User user) {
+        User addedUser = userService.addUser(user);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(addedUser.getId()).toUri();
+        return ResponseEntity.created(location).body(addedUser);
     }
 
     @GetMapping
@@ -35,21 +34,14 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody @Valid User user) {
-        Map<String, String> errors = userService.validateUpdateUser(user, id);
-        if (errors.isEmpty()) {
-            return ResponseEntity.ok(userService.updateUser(user, id));
-        }
-        return ResponseEntity.badRequest().body(errors);
+    public ResponseEntity<User> update(@PathVariable Long id, @RequestBody @Valid User user) {
+        return ResponseEntity.ok(userService.updateUser(user, id));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, String>> deleteCar(@PathVariable Long id) {
-        Map<String, String> errors = userService.validateDeleteUser(id);
-        if (errors.isEmpty()) {
-            userService.deleteUser(id);
-            return ResponseEntity.noContent().build();
-        } else return ResponseEntity.badRequest().body(errors);
+    public ResponseEntity deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")

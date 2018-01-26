@@ -1,11 +1,13 @@
 package com.rental.carshowroom.handler;
 
 import com.rental.carshowroom.exception.NotFoundException;
+import com.rental.carshowroom.util.ConstraintsUtil;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -67,6 +69,13 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public Map<String, String> handleIllegalStateOrArgumentOrMappingException(Exception e) {
         return buildResponseMap(errorKey, wrongJsonSyntaxError);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public Map<String, String> handleDataIntegrityViolationException(Exception e) {
+        return buildResponseMap(ConstraintsUtil.getConstraintNameFromException(e.getCause().getCause()), ConstraintsUtil.getConstraintMessageFromException(e.getCause().getCause()));
     }
 
     @ExceptionHandler(TypeMismatchException.class)

@@ -11,7 +11,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -22,10 +21,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Leasing extends AbstractEntity {
-
-    @ManyToOne
-    private Car car;
+public class Leasing extends Transaction {
 
     @Min(1)
     @NotNull
@@ -45,7 +41,7 @@ public class Leasing extends AbstractEntity {
 
     @Min(24)
     @NotNull
-    private Long installment;
+    private Long installments;
 
 
 }
