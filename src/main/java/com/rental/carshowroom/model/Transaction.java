@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
@@ -19,7 +20,8 @@ public abstract class Transaction extends AbstractEntity {
     @TableGenerator(table = "SEQUENCES", name = "TransactionIdGenerator")
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @NotNull
     private Car car;
     @ManyToOne
     private User user;

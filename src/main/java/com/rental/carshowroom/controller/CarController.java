@@ -10,12 +10,10 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/car")
 public class CarController {
-
     private CarService carService;
 
     @Autowired
@@ -40,12 +38,12 @@ public class CarController {
         return ResponseEntity.created(location).body(addedCar);
     }
 
-    @GetMapping("/buy")
+    @GetMapping("/forbuy")
     public ResponseEntity<List<Car>> getAllAviableCarsToLeaseOrBuy() {
         return ResponseEntity.ok(carService.findAllAviableCarsToLeaseOrBuy());
     }
 
-    @GetMapping("/rent")
+    @GetMapping("/forrent")
     public ResponseEntity<List<Car>> getAllAvaibleCarsToRent() {
         return ResponseEntity.ok(carService.findAllAvaibleCarsToRent());
     }
@@ -61,18 +59,8 @@ public class CarController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/buy/{id}")
-    public ResponseEntity<?> buyCar(@PathVariable Long id) {
-        Map<String, String> errors = carService.validateBuy(id);
-        if (!errors.isEmpty()) {
-            return ResponseEntity.badRequest().body(errors);
-        }
-        return ResponseEntity.ok(carService.buyCar(id));
-    }
-
     @PatchMapping("/status/{id}")
-    public ResponseEntity<Car> editCarStatus(@RequestBody @Valid Car car, @PathVariable Long id)
-    {
+    public ResponseEntity<Car> editCarStatus(@RequestBody @Valid Car car, @PathVariable Long id) {
         return ResponseEntity.ok(carService.updateCarStatus(id, car.getStatus()));
     }
 
