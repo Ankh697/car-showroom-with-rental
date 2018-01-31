@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -47,9 +48,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public Map<String, String> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
-        Map<String, String> response = new LinkedHashMap<>();
-        response.put(errorKey, wrongJsonSyntaxError);
-        return response;
+        return Collections.singletonMap(errorKey, wrongJsonSyntaxError);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -68,33 +67,27 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public Map<String, String> handleIllegalStateOrArgumentOrMappingException(Exception e) {
-        return buildResponseMap(errorKey, wrongJsonSyntaxError);
+        return Collections.singletonMap(errorKey, wrongJsonSyntaxError);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public Map<String, String> handleDataIntegrityViolationException(Exception e) {
-        return buildResponseMap(ConstraintsUtil.getConstraintNameFromException(e.getCause().getCause()), ConstraintsUtil.getConstraintMessageFromException(e.getCause().getCause()));
+        return Collections.singletonMap(ConstraintsUtil.getConstraintNameFromException(e.getCause().getCause()), ConstraintsUtil.getConstraintMessageFromException(e.getCause().getCause()));
     }
 
     @ExceptionHandler(TypeMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public Map<String, String> handleTypeMismatchException(TypeMismatchException e) {
-        return buildResponseMap(errorKey, wrongParametersError);
+        return Collections.singletonMap(errorKey, wrongParametersError);
     }
 
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
     public Map<String, String> handleNotFoundException(NotFoundException e) {
-        return buildResponseMap(errorKey, env.getProperty(e.getCode().getDescriptionProperty()));
-    }
-
-    private Map<String, String> buildResponseMap(String key, String value) {
-        Map<String, String> response = new LinkedHashMap<>();
-        response.put(key, value);
-        return response;
+        return Collections.singletonMap(errorKey, env.getProperty(e.getCode().getDescriptionProperty()));
     }
 }
