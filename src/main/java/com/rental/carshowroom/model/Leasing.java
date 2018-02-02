@@ -2,11 +2,9 @@ package com.rental.carshowroom.model;
 
 
 import com.rental.carshowroom.model.enums.LeasingStatus;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.NumberFormat;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -16,6 +14,7 @@ import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity(name = "leasings")
 @Data
 @NoArgsConstructor
@@ -23,8 +22,8 @@ import java.time.LocalDate;
 @Builder
 public class Leasing extends Transaction {
 
-    @Min(1)
     @NotNull
+    @NumberFormat(style = NumberFormat.Style.CURRENCY)
     private BigDecimal pricePerOneInstallment;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)

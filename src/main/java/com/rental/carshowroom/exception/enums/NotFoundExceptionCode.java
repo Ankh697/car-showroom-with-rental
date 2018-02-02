@@ -12,7 +12,8 @@ public enum NotFoundExceptionCode {
     USER_NOT_FOUND("msg.validation.user.notfound"),
     LEASING_NOT_FOUND("msg.validation.leasing.notfound"),
     PAYMENT_NOT_FOUND("msg.validation.payment.notfound"),
-    SALE_NOT_FOUND("msg.validation.sale.notfound");
+    SALE_NOT_FOUND("msg.validation.sale.notfound"),
+    RENT_NOT_FOUND("msg.validation.rent.notfound");
 
     private String descriptionProperty;
 
