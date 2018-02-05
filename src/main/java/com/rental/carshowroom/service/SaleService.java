@@ -49,7 +49,7 @@ public class SaleService {
                 .build());
     }
 
-    public Payment buyCar(Long id) {
+    public Payment buyCar(Long id) throws NotFoundException {
         Sale sale = prepareSale(carService.getCar(id), null);
         sale.getCar().setStatus(CarStatus.SOLD);
         return paymentService.preparePaymentForSale(sale);

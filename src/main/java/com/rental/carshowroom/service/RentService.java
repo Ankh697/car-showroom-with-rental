@@ -61,19 +61,19 @@ public class RentService {
         return errors;
     }
 
-    public Rent confirmRent(Long id) {
+    public Rent confirmRent(Long id) throws NotFoundException {
         Rent rent = findRent(id);
         rent.setStatus(RentStatus.CONFIRMED);
         return rentRepository.save(rent);
     }
 
-    public Rent cancelRent(Long id) {
+    public Rent cancelRent(Long id) throws NotFoundException {
         Rent rent = findRent(id);
         rent.setStatus(RentStatus.CANCELLED);
         return rentRepository.save(rent);
     }
 
-    public Rent finishRent(Long id) {
+    public Rent finishRent(Long id) throws NotFoundException {
         Rent rent = findRent(id);
         rent.setStatus(RentStatus.FINISHED);
         rent.setReturnDate(LocalDateTime.now());
@@ -81,13 +81,13 @@ public class RentService {
         return rentRepository.save(rent);
     }
 
-    public Rent confirmCollect(Long id) {
+    public Rent confirmCollect(Long id) throws NotFoundException {
         Rent rent = findRent(id);
         rent.setBorrowDate(LocalDateTime.now());
         return rentRepository.save(rent);
     }
 
-    public Rent findRent(Long id) {
+    public Rent findRent(Long id) throws NotFoundException {
         Rent rent = rentRepository.findOne(id);
         if (rent != null) {
             return rent;

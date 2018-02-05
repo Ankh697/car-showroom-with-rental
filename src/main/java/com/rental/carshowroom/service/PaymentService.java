@@ -65,7 +65,7 @@ public class PaymentService {
         return paymentRepository.findAllByStatus(PaymentStatus.WAITING);
     }
 
-    public Payment acceptPayment(Long id) {
+    public Payment acceptPayment(Long id) throws NotFoundException {
         Payment payment = findPayment(id);
         payment.setAcceptedDate(LocalDateTime.now());
         payment.setStatus(PaymentStatus.ACCEPTED);
@@ -86,7 +86,7 @@ public class PaymentService {
         return paymentRepository.save(payment);
     }
 
-    public Payment declinePayment(Long id) {
+    public Payment declinePayment(Long id) throws NotFoundException {
         Payment payment = findPayment(id);
         payment.setStatus(PaymentStatus.DECLINED);
         switch (payment.getTransactionType()) {
