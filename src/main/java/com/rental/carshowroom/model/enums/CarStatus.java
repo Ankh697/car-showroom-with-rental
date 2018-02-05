@@ -7,7 +7,6 @@ public enum CarStatus {
     FOR_SALE,
     DISACTIVE,
     SOLD,
-    LEASED,
-    USED_FOR_SALE
+    LEASED
 }
 

@@ -1,5 +1,6 @@
 package com.rental.carshowroom;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -15,13 +16,15 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import java.util.Properties;
+
 @SpringBootApplication
 @EnableJpaRepositories("com.rental.carshowroom.repository")
 @ComponentScan
 @EntityScan(
 		basePackageClasses = { CarShowroomApplication.class, Jsr310JpaConverters.class }
 )
-@EnableWebMvc
+//@EnableWebMvc
 public class CarShowroomApplication {
 
 	public static void main(String[] args) {
