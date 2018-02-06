@@ -9,10 +9,13 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserRepository extends PagingAndSortingRepository<User, Long> {
     List<User> findAll();
+
+    Optional<User> findByUsername(String username);
 
     @Query("UPDATE User u SET u.nameAndSurname = ?#{#nameAndSurname}, u.pesel = ?#{#pesel}, u.status = ?#{#status} WHERE u.id = ?#{#id}")
     @Modifying
