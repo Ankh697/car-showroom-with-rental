@@ -2,6 +2,7 @@ package com.rental.carshowroom.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,6 +22,10 @@ class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     public void configure(HttpSecurity http) throws Exception {
         http
                 .antMatcher("/**").authorizeRequests()
+                .antMatchers(HttpMethod.POST, "/api/user").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/car/rent").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/car/buy").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/car/*").permitAll()
                 .anyRequest()
                 .authenticated();
     }

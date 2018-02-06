@@ -12,6 +12,7 @@ import com.rental.carshowroom.validator.CarValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,6 +25,7 @@ public class RentService {
     private RentRepository rentRepository;
     private PaymentService paymentService;
     private CarValidator carValidator;
+    private UserService userService;
 
     @Value("${msg.validation.car.notforrent")
     private String carNotForRent;
@@ -31,10 +33,11 @@ public class RentService {
     private final String STATUS_KEY = "status";
 
     @Autowired
-    public RentService(RentRepository rentRepository, PaymentService paymentService, CarValidator carValidator) {
+    public RentService(RentRepository rentRepository, PaymentService paymentService, CarValidator carValidator, UserService userService) {
         this.rentRepository = rentRepository;
         this.paymentService = paymentService;
         this.carValidator = carValidator;
+        this.userService = userService;
     }
 
     public Payment rentCar(Rent rent) {
@@ -50,6 +53,7 @@ public class RentService {
                 .startDate(rent.getStartDate())
                 .endDate(rent.getEndDate())
                 .costPerDay(rent.getCar().getRentCostPerDay())
+                .user(userService.findUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName()))
                 .build());
     }
 
@@ -94,5 +98,9 @@ public class RentService {
         } else {
             throw new NotFoundException(NotFoundExceptionCode.RENT_NOT_FOUND);
         }
+    }
+
+    public boolean isOwner(Long id) {
+        return findRent(id).getUser().getUsername().equals(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 }

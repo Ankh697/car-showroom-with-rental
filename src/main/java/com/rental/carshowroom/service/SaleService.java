@@ -4,7 +4,6 @@ import com.rental.carshowroom.exception.NotFoundException;
 import com.rental.carshowroom.model.Car;
 import com.rental.carshowroom.model.Payment;
 import com.rental.carshowroom.model.Sale;
-import com.rental.carshowroom.model.User;
 import com.rental.carshowroom.model.enums.CarStatus;
 import com.rental.carshowroom.model.enums.SaleStatus;
 import com.rental.carshowroom.repository.SaleRepository;
@@ -12,6 +11,7 @@ import com.rental.carshowroom.validator.CarValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -25,6 +25,7 @@ public class SaleService {
     private PaymentService paymentService;
     private CarValidator carValidator;
     private CarService carService;
+    private UserService userService;
 
     @Value("${msg.validation.car.notforsale")
     private String carNotForSale;
@@ -32,25 +33,26 @@ public class SaleService {
     private final String STATUS_KEY = "status";
 
     @Autowired
-    public SaleService(SaleRepository saleRepository, PaymentService paymentService, CarValidator carValidator, CarService carService) {
+    public SaleService(SaleRepository saleRepository, PaymentService paymentService, CarValidator carValidator, CarService carService, UserService userService) {
         this.saleRepository = saleRepository;
         this.paymentService = paymentService;
         this.carValidator = carValidator;
         this.carService = carService;
+        this.userService = userService;
     }
 
-    public Sale prepareSale(Car car, User user) {
+    public Sale prepareSale(Car car) {
         return saleRepository.save(Sale.builder()
                 .price(car.getPriceBrutto())
                 .requestedDate(LocalDateTime.now())
                 .status(SaleStatus.ORDERED)
                 .car(car)
-                .user(user)
+                .user(userService.findUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName()))
                 .build());
     }
 
     public Payment buyCar(Long id) throws NotFoundException {
-        Sale sale = prepareSale(carService.getCar(id), null);
+        Sale sale = prepareSale(carService.getCar(id));
         sale.getCar().setStatus(CarStatus.SOLD);
         return paymentService.preparePaymentForSale(sale);
     }

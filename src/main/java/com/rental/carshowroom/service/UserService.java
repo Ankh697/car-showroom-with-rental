@@ -9,6 +9,7 @@ import com.rental.carshowroom.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -71,5 +72,9 @@ public class UserService {
 
     public void deleteUser(Long id) {
         userRepository.delete(id);
+    }
+
+    public boolean isProperUser(Long id) {
+        return findUser(id).getUsername().equals(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 }

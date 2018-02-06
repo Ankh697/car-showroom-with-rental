@@ -64,4 +64,13 @@ public class CarService {
         carRepository.updateStatus(id, status);
         return carRepository.findOne(id);
     }
+
+    public boolean validateIfCarExist(Long id) {
+        if(carRepository.exists(id)) {
+            return true;
+        }
+        else {
+            throw new NotFoundException(NotFoundExceptionCode.CAR_NOT_FOUND);
+        }
+    }
 }

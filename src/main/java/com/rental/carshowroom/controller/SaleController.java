@@ -4,6 +4,7 @@ import com.rental.carshowroom.service.CarService;
 import com.rental.carshowroom.service.SaleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +25,7 @@ public class SaleController {
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<?> buyCar(@PathVariable Long id) {
         Map<String, String> errors = saleService.validateBuy(carService.getCar(id));
         if (!errors.isEmpty()) {
