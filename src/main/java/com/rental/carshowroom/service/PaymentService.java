@@ -166,6 +166,6 @@ public class PaymentService {
                 .transaction(leasing)
                 .status(PaymentStatus.WAITING)
                 .value(leasing.getInitialPayment())
-                .transactionType(TransactionType.LEASING).build());
+                .transactionType(TransactionType.LEASING_INITIAL_PAYMNET).build());
     }
 }

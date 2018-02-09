@@ -1,5 +1,6 @@
 package com.rental.carshowroom.model;
 
+import com.rental.carshowroom.validator.groups.CalculateLeasingValidationGroup;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -21,7 +22,7 @@ public abstract class Transaction extends AbstractEntity {
     private Long id;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @NotNull
+    @NotNull(groups = {CalculateLeasingValidationGroup.class})
     private Car car;
     @ManyToOne
     private User user;
