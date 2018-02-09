@@ -5,6 +5,7 @@ import com.rental.carshowroom.exception.enums.NotFoundExceptionCode;
 import com.rental.carshowroom.model.Car;
 import com.rental.carshowroom.model.Leasing;
 import com.rental.carshowroom.model.Payment;
+import com.rental.carshowroom.model.enums.CarStatus;
 import com.rental.carshowroom.model.enums.LeasingStatus;
 import com.rental.carshowroom.repository.LeasingRepository;
 import com.rental.carshowroom.validator.LeasingValidator;
@@ -18,7 +19,6 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 @PropertySource("classpath:validationmessages.properties")
@@ -48,13 +48,6 @@ public class LeasingService {
         return leasingRepository.findAll();
     }
 
-    public boolean checkLeasingExist(Long id) throws NotFoundException {
-        if (!leasingRepository.exists(id)) {
-            throw new NotFoundException(NotFoundExceptionCode.LEASING_NOT_FOUND);
-        }
-        return true;
-    }
-
     public Leasing findLeasing(Long id) throws NotFoundException {
         Leasing leasing = leasingRepository.findOne(id);
         if (leasing != null) {
@@ -69,8 +62,7 @@ public class LeasingService {
         Leasing preparedLeasing = prepareLeasing(leasing);
         if (preparedLeasing.getInitialPayment().compareTo(BigDecimal.ZERO) > 0) {
             return paymentService.preparePaymentForLeasing(preparedLeasing);
-        }
-        else {
+        } else {
             return new Payment(preparedLeasing);
         }
     }
@@ -79,22 +71,6 @@ public class LeasingService {
         leasing.setCar(carService.getCar(leasing.getCar().getId()));
         leasing.setEndDate(leasing.getExpectedStartDate().plusMonths(leasing.getInstallments()));
         leasing.setLeasingStatus(LeasingStatus.WAITING);
-        return leasingRepository.save(leasing);
-    }
-
-    public void deleteLeasing(Long id) {
-        leasingRepository.delete(id);
-    }
-
-    public Leasing updateLeasing(Leasing leasing, Long id) throws NotFoundException {
-        checkLeasingExist(id);
-        leasing.setId(id);
-        return leasingRepository.save(leasing);
-    }
-
-    public Leasing updateLeasingStatus(LeasingStatus leasingStatus, Long id) {
-        Leasing leasing = findLeasing(id);
-        leasing.setLeasingStatus(leasingStatus);
         return leasingRepository.save(leasing);
     }
 
@@ -109,5 +85,19 @@ public class LeasingService {
         leasingValidator.validateLeasingStatus(car, errors);
         leasingValidator.validateLeasingInitiallPayment(leasing, car, errors);
         return errors;
+    }
+
+    public Leasing cancelLeasing(Long id) {
+        Leasing leasing = findLeasing(id);
+        leasing.setLeasingStatus(LeasingStatus.CANCELLED);
+        leasing.getCar().setStatus(CarStatus.FOR_SALE);
+        return leasingRepository.save(leasing);
+    }
+
+    public Leasing finishLeasing(Long id) {
+        Leasing leasing = findLeasing(id);
+        leasing.setEndDate(LocalDate.now());
+        leasing.getCar().setStatus(CarStatus.FOR_SALE);
+        return leasingRepository.save(leasing);
     }
 }

@@ -54,23 +54,6 @@ public class LeasingController {
         return ResponseEntity.created(location).body(payment);
     }
 
-    @DeleteMapping
-    public ResponseEntity deleteLeasing(@PathVariable Long id)
-    {
-        leasingService.deleteLeasing(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PutMapping
-    public ResponseEntity<Leasing> updateLeasing(@PathVariable Long id, @RequestBody @Valid Leasing leasing) {
-        return ResponseEntity.ok(leasingService.updateLeasing(leasing, id));
-    }
-
-    @PatchMapping("/status/{id}")
-    public ResponseEntity<Leasing> editLeasingStatus(@RequestBody @Valid Leasing leasing, Long id) {
-        return ResponseEntity.ok(leasingService.updateLeasingStatus(leasing.getLeasingStatus(), id));
-    }
-
     @GetMapping("/search")
     public ResponseEntity<List<Leasing>> getLeasingsBetweenTwoDates(@RequestParam("start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
                                                               @RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
@@ -81,5 +64,15 @@ public class LeasingController {
     public ResponseEntity<BigDecimal> calculateLeasing(@RequestBody @Validated({CalculateLeasingValidationGroup.class}) Leasing leasing)
     {
         return ResponseEntity.ok(LeasingUtil.calculateLeasing(leasing, carService.getCar(leasing.getCar().getId())));
+    }
+
+    @PatchMapping("/cancel/{id}")
+    public ResponseEntity<Leasing> cancelLeasing(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(leasingService.cancelLeasing(id));
+    }
+
+    @PatchMapping("/finish/{id}")
+    public ResponseEntity<Leasing> finishLeasing(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(leasingService.finishLeasing(id));
     }
 }
