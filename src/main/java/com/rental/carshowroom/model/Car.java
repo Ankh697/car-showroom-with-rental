@@ -1,6 +1,8 @@
 package com.rental.carshowroom.model;
 
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.rental.carshowroom.deserializer.BooleanDeserializer;
 import com.rental.carshowroom.model.enums.CarStatus;
 import com.rental.carshowroom.model.enums.Petrol;
 import lombok.*;
@@ -57,4 +59,6 @@ public class Car extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     @NotNull
     private Petrol petrol;
+    @JsonDeserialize(using = BooleanDeserializer.class)
+    private Boolean used;
 }

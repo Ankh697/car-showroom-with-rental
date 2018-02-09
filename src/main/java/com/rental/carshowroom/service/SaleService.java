@@ -59,8 +59,7 @@ public class SaleService {
 
     public Map<String, String> validateBuy(Car car) throws NotFoundException {
         Map<String, String> errors = new LinkedHashMap<>();
-        if (!carValidator.validateIfStatusCorrectForOperation(car, CarStatus.FOR_SALE)
-                && !carValidator.validateIfStatusCorrectForOperation(car, CarStatus.USED_FOR_SALE)) {
+        if (!carValidator.validateIfStatusCorrectForOperation(car, CarStatus.FOR_SALE)) {
             errors.put(STATUS_KEY, carNotForSale);
         }
         return errors;

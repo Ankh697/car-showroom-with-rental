@@ -1,5 +1,5 @@
 package com.rental.carshowroom.model.enums;
 
 public enum TransactionType {
-    BUY, RENT, LEASING, PENALTY;
+    BUY, RENT, PENALTY, LEASING_INSTALLMENT, LEASING_INITIAL_PAYMNET;
 }
