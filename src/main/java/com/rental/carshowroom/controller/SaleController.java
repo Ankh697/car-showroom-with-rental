@@ -1,13 +1,16 @@
 package com.rental.carshowroom.controller;
 
+import com.rental.carshowroom.model.Payment;
 import com.rental.carshowroom.service.CarService;
 import com.rental.carshowroom.service.SaleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.Map;
 
@@ -23,12 +26,16 @@ public class SaleController {
         this.saleService = saleService;
     }
 
-    @PatchMapping("/{id}")
+    @PostMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<?> buyCar(@PathVariable Long id) {
         Map<String, String> errors = saleService.validateBuy(carService.getCar(id));
         if (!errors.isEmpty()) {
             return ResponseEntity.badRequest().body(errors);
         }
-        return ResponseEntity.ok(saleService.buyCar(id));
+        Payment payment = saleService.buyCar(id);
+        return ResponseEntity
+                .created(ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(payment.getTransaction().getId()).toUri())
+                .body(payment);
     }
 }

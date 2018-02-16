@@ -1,6 +1,8 @@
 package com.rental.carshowroom.model;
 
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.rental.carshowroom.deserializer.BooleanDeserializer;
 import com.rental.carshowroom.model.enums.CarStatus;
 import com.rental.carshowroom.model.enums.Petrol;
 import lombok.*;
@@ -28,7 +30,7 @@ public class Car extends AbstractEntity {
     @Min(1900)
     private Integer productionYear;
     @Min(0)
-    private Long whichOwner;
+    private Integer whichOwner;
     @Min(0)
     private Long mileage;
     @NotNull
@@ -53,8 +55,10 @@ public class Car extends AbstractEntity {
     private Long enginePower;
     @Enumerated(EnumType.STRING)
     @NotNull
-    private CarStatus status = CarStatus.DISACTIVE;
+    private CarStatus status;
     @Enumerated(EnumType.STRING)
     @NotNull
     private Petrol petrol;
+    @JsonDeserialize(using = BooleanDeserializer.class)
+    private Boolean used;
 }

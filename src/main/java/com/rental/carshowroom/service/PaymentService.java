@@ -2,10 +2,7 @@ package com.rental.carshowroom.service;
 
 import com.rental.carshowroom.exception.NotFoundException;
 import com.rental.carshowroom.exception.enums.NotFoundExceptionCode;
-import com.rental.carshowroom.model.Payment;
-import com.rental.carshowroom.model.Rent;
-import com.rental.carshowroom.model.Sale;
-import com.rental.carshowroom.model.Transaction;
+import com.rental.carshowroom.model.*;
 import com.rental.carshowroom.model.enums.*;
 import com.rental.carshowroom.repository.PaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -53,7 +52,7 @@ public class PaymentService {
                 .companyName(name)
                 .transaction(rent)
                 .status(PaymentStatus.WAITING)
-                .value(rent.getCostPerDay())
+                .value(rent.getCostPerDay().multiply(BigDecimal.valueOf(ChronoUnit.DAYS.between(rent.getStartDate(), rent.getEndDate()))))
                 .transactionType(TransactionType.RENT).build());
     }
 
@@ -65,7 +64,7 @@ public class PaymentService {
         return paymentRepository.findAllByStatus(PaymentStatus.WAITING);
     }
 
-    public Payment acceptPayment(Long id) {
+    public Payment acceptPayment(Long id) throws NotFoundException {
         Payment payment = findPayment(id);
         payment.setAcceptedDate(LocalDateTime.now());
         payment.setStatus(PaymentStatus.ACCEPTED);
@@ -78,7 +77,11 @@ public class PaymentService {
                 updateAcceptedRent(payment.getTransaction());
                 break;
             }
-            case LEASING:
+            case LEASING_INITIAL_PAYMNET:
+                updateAcceptedLeasing(payment.getTransaction());
+                break;
+            case LEASING_INSTALLMENT:
+                updateAcceptedPaidInstallment(payment.getTransaction());
                 break;
             case PENALTY:
                 break;
@@ -86,7 +89,7 @@ public class PaymentService {
         return paymentRepository.save(payment);
     }
 
-    public Payment declinePayment(Long id) {
+    public Payment declinePayment(Long id) throws NotFoundException {
         Payment payment = findPayment(id);
         payment.setStatus(PaymentStatus.DECLINED);
         switch (payment.getTransactionType()) {
@@ -97,7 +100,10 @@ public class PaymentService {
             case RENT:
                 updateDeclinedRent(payment.getTransaction());
                 break;
-            case LEASING:
+            case LEASING_INITIAL_PAYMNET:
+                updateDeclinedLeasing(payment.getTransaction());
+                break;
+            case LEASING_INSTALLMENT:
                 break;
             case PENALTY:
                 break;
@@ -128,6 +134,23 @@ public class PaymentService {
         rent.getCar().setStatus(CarStatus.FOR_RENT);
     }
 
+    private void updateAcceptedLeasing(Transaction transaction) {
+        Leasing leasing = (Leasing) transaction;
+        leasing.setLeasingStatus(LeasingStatus.ACCEPTED);
+    }
+
+    private void updateAcceptedPaidInstallment(Transaction transaction) {
+        Leasing leasing = (Leasing) transaction;
+        leasing.setInstallmentsPaid(leasing.getInstallmentsPaid() + 1);
+    }
+
+    private void updateDeclinedLeasing(Transaction transaction) {
+        Leasing leasing = (Leasing) transaction;
+        leasing.setLeasingStatus(LeasingStatus.REJECTED);
+        leasing.getCar().setStatus(CarStatus.FOR_SALE);
+    }
+
+
     private Payment findPayment(Long id) throws NotFoundException {
         Payment payment = paymentRepository.findOne(id);
         if (payment != null) {
@@ -135,5 +158,16 @@ public class PaymentService {
         } else {
             throw new NotFoundException(NotFoundExceptionCode.PAYMENT_NOT_FOUND);
         }
+    }
+
+    public Payment preparePaymentForLeasing(Leasing leasing) {
+        return paymentRepository.save(Payment.builder()
+                .accountNumber(accountNumber)
+                .address(address)
+                .companyName(name)
+                .transaction(leasing)
+                .status(PaymentStatus.WAITING)
+                .value(leasing.getInitialPayment())
+                .transactionType(TransactionType.LEASING_INITIAL_PAYMNET).build());
     }
 }

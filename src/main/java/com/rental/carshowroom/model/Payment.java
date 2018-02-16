@@ -43,4 +43,8 @@ public class Payment extends AbstractEntity {
     private String companyName;
     @Transient
     private String address;
+
+    public Payment(Leasing preparedLeasing) {
+        this.transaction=transaction;
+    }
 }

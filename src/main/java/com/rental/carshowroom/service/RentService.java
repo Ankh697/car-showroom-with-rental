@@ -12,6 +12,7 @@ import com.rental.carshowroom.validator.CarValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,33 +25,34 @@ public class RentService {
     private RentRepository rentRepository;
     private PaymentService paymentService;
     private CarValidator carValidator;
+    private UserService userService;
+    private CarService carService;
 
-    @Value("${msg.validation.car.notforrent")
+    @Value("${msg.validation.car.notforrent}")
     private String carNotForRent;
 
     private final String STATUS_KEY = "status";
 
     @Autowired
-    public RentService(RentRepository rentRepository, PaymentService paymentService, CarValidator carValidator) {
+    public RentService(RentRepository rentRepository, PaymentService paymentService, CarValidator carValidator, UserService userService, CarService carService) {
         this.rentRepository = rentRepository;
         this.paymentService = paymentService;
         this.carValidator = carValidator;
+        this.userService = userService;
+        this.carService = carService;
     }
 
     public Payment rentCar(Rent rent) {
-        Rent preparedRent = prepareRent(rent);
+        rent.setCar(carService.getCar(rent.getCar().getId()));
         rent.getCar().setStatus(CarStatus.RENTED);
-        return paymentService.preparePaymentForRent(preparedRent);
+        return paymentService.preparePaymentForRent(prepareRent(rent));
     }
 
     private Rent prepareRent(Rent rent) {
-        return rentRepository.save(Rent.builder()
-                .status(RentStatus.RESERVED)
-                .car(rent.getCar())
-                .startDate(rent.getStartDate())
-                .endDate(rent.getEndDate())
-                .costPerDay(rent.getCar().getRentCostPerDay())
-                .build());
+        rent.setStatus(RentStatus.RESERVED);
+        rent.setCostPerDay(rent.getCar().getRentCostPerDay());
+        rent.setUser(userService.findUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName()));
+        return rentRepository.save(rent);
     }
 
     public Map<String, String> validateRent(Car car) throws NotFoundException {
@@ -61,19 +63,19 @@ public class RentService {
         return errors;
     }
 
-    public Rent confirmRent(Long id) {
+    public Rent confirmRent(Long id) throws NotFoundException {
         Rent rent = findRent(id);
         rent.setStatus(RentStatus.CONFIRMED);
         return rentRepository.save(rent);
     }
 
-    public Rent cancelRent(Long id) {
+    public Rent cancelRent(Long id) throws NotFoundException {
         Rent rent = findRent(id);
         rent.setStatus(RentStatus.CANCELLED);
         return rentRepository.save(rent);
     }
 
-    public Rent finishRent(Long id) {
+    public Rent finishRent(Long id) throws NotFoundException {
         Rent rent = findRent(id);
         rent.setStatus(RentStatus.FINISHED);
         rent.setReturnDate(LocalDateTime.now());
@@ -81,18 +83,22 @@ public class RentService {
         return rentRepository.save(rent);
     }
 
-    public Rent confirmCollect(Long id) {
+    public Rent collectCar(Long id) throws NotFoundException {
         Rent rent = findRent(id);
         rent.setBorrowDate(LocalDateTime.now());
         return rentRepository.save(rent);
     }
 
-    public Rent findRent(Long id) {
+    public Rent findRent(Long id) throws NotFoundException {
         Rent rent = rentRepository.findOne(id);
         if (rent != null) {
             return rent;
         } else {
             throw new NotFoundException(NotFoundExceptionCode.RENT_NOT_FOUND);
         }
+    }
+
+    public boolean isOwner(Long id) {
+        return findRent(id).getUser().getUsername().equals(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 }

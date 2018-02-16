@@ -5,9 +5,8 @@ public enum CarStatus {
     RENTED,
     SIDESHOW,
     FOR_SALE,
-    DISACTIVE,
+    INACTIVE,
     SOLD,
-    LEASED,
-    USED_FOR_SALE
+    LEASED
 }
 
