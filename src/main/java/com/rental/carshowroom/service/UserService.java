@@ -24,23 +24,21 @@ import java.util.Optional;
 @PropertySource("classpath:validationmessages.properties")
 public class UserService {
     private UserRepository userRepository;
-    private VerificationTokenRepository tokenRepository;
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
     private VerificationTokenService verificationTokenService;
 
     @Value("${msg.validation.user.notfound}")
     private String userNotFound;
 
-    private BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-
     @Autowired
-    public UserService(UserRepository userRepository, VerificationTokenRepository tokenRepository, VerificationTokenService verificationTokenService, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserService(UserRepository userRepository, VerificationTokenService verificationTokenService, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
-        this.tokenRepository = tokenRepository;
         this.verificationTokenService = verificationTokenService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     public User addUser(User user) {
+        user.setStatus(UserStatus.INACTIVE);
         user.setRoles(Collections.singleton(new Role(RoleType.ROLE_USER)));
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
@@ -60,8 +58,12 @@ public class UserService {
     }
 
     public User updateUser(User user, Long id) {
-        userRepository.updateUser(id, user.getNameAndSurname(), user.getPesel(), user.getStatus());
-        return userRepository.findOne(id);
+        User userInDb = findUser(id);
+        userInDb.setEmail(user.getEmail());
+        userInDb.setStatus(user.getStatus());
+        userInDb.setPesel(user.getPesel());
+        userInDb.setNameAndSurname(user.getNameAndSurname());
+        return userRepository.save(userInDb);
     }
 
     private User findUser(Long id) throws NotFoundException {

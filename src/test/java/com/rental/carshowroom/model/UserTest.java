@@ -26,9 +26,7 @@ public class UserTest {
     private LocalValidatorFactoryBean validator;
 
     private User user;
-    private final String PESEL = "12345678901";
     private Set<ConstraintViolation<User>> violations;
-
 
     private String notBlankMessage = "may not be empty";
     private String notNullMessage = "may not be null";
@@ -38,12 +36,17 @@ public class UserTest {
     private String usernameSize;
     @Value("${msg.validation.user.nameandsurname.size}")
     private String nameAndSurnameSize;
+    @Value("${msg.validation.user.email.pattern}")
+    private String emailPattern;
 
     @Before
     public void setup() {
         user = User.builder()
                 .username(RandomStringUtils.randomAlphanumeric(5))
                 .nameAndSurname(RandomStringUtils.randomAlphanumeric(5))
+                .password(RandomStringUtils.randomAlphanumeric(5))
+                .email("xxx@example.com")
+                .pesel(RandomStringUtils.randomNumeric(11))
                 .pesel(PESEL)
                 .status(UserStatus.INACTIVE)
                 .build();
@@ -74,6 +77,62 @@ public class UserTest {
     @Test
     public void blankUsernameTest() {
         user.setUsername("     ");
+        violations = validator.validate(user);
+        assertEquals(1, violations.size());
+        assertEquals(notBlankMessage, violations.iterator().next().getMessage());
+    }
+
+    @Test
+    public void nullEmailTest() {
+        user.setEmail(null);
+        violations = validator.validate(user);
+        assertEquals(1, violations.size());
+        assertEquals(notNullMessage, violations.iterator().next().getMessage());
+    }
+
+    @Test
+    public void emptyEmailTest() {
+        user.setEmail("");
+        violations = validator.validate(user);
+        assertEquals(1, violations.size());
+        assertEquals(emailPattern, violations.iterator().next().getMessage());
+    }
+
+    @Test
+    public void blankEmailTest() {
+        user.setEmail("     ");
+        violations = validator.validate(user);
+        assertEquals(1, violations.size());
+        assertEquals(emailPattern, violations.iterator().next().getMessage());
+    }
+
+    @Test
+    public void wrongEmailPatternTest() {
+        user.setEmail(RandomStringUtils.randomAlphabetic(10));
+        violations = validator.validate(user);
+        assertEquals(1, violations.size());
+        assertEquals(emailPattern, violations.iterator().next().getMessage());
+    }
+
+    @Test
+    public void nullPasswordTest() {
+        user.setPassword(null);
+        violations = validator.validate(user);
+        assertEquals(1, violations.size());
+        assertEquals(notBlankMessage, violations.iterator().next().getMessage());
+    }
+
+    @Test
+    public void emptyPasswordTest() {
+        user.setPassword("");
+        violations = validator.validate(user);
+        assertEquals(1, violations.size());
+        assertEquals(notBlankMessage, violations.iterator().next().getMessage());
+    }
+
+    @Test
+    public void blankPasswordTest() {
+        user.setPassword("     ");
         violations = validator.validate(user);
         assertEquals(1, violations.size());
         assertEquals(notBlankMessage, violations.iterator().next().getMessage());
@@ -146,14 +205,6 @@ public class UserTest {
     @Test
     public void nullPeselTest() {
         user.setPesel(null);
-        violations = validator.validate(user);
-        assertEquals(1, violations.size());
-        assertEquals(notNullMessage, violations.iterator().next().getMessage());
-    }
-
-    @Test
-    public void nullStatusTest() {
-        user.setStatus(null);
         violations = validator.validate(user);
         assertEquals(1, violations.size());
         assertEquals(notNullMessage, violations.iterator().next().getMessage());
