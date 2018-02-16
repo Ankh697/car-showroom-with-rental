@@ -47,7 +47,6 @@ public class UserTest {
                 .password(RandomStringUtils.randomAlphanumeric(5))
                 .email("xxx@example.com")
                 .pesel(RandomStringUtils.randomNumeric(11))
-                .pesel(PESEL)
                 .status(UserStatus.INACTIVE)
                 .build();
     }
