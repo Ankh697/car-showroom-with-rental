@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -38,7 +39,15 @@ public class CarService {
         }
     }
 
+    private BigDecimal calculateNetto(BigDecimal priceBrutto) {
+        return priceBrutto.setScale(2, BigDecimal.ROUND_UP).divide(BigDecimal.valueOf(1.23), BigDecimal.ROUND_HALF_UP);
+    }
+
     public Car addCar(Car car) {
+        if (car.getUsed() == null) {
+            car.setUsed(false);
+        }
+        car.setPriceNetto(calculateNetto(car.getPriceBrutto()));
         return carRepository.save(car);
     }
 
