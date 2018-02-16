@@ -37,7 +37,7 @@ public class UserServiceIntegrationTest {
                 .username(RandomStringUtils.randomAlphanumeric(5))
                 .nameAndSurname(RandomStringUtils.randomAlphanumeric(5))
                 .pesel(PESEL)
-                .status(UserStatus.DISACTIVE)
+                .status(UserStatus.INACTIVE)
                 .build();
     }
 
@@ -84,13 +84,13 @@ public class UserServiceIntegrationTest {
                 .username(RandomStringUtils.randomAlphanumeric(5))
                 .nameAndSurname(RandomStringUtils.randomAlphanumeric(5))
                 .pesel(PESEL)
-                .status(UserStatus.DISACTIVE)
+                .status(UserStatus.INACTIVE)
                 .build());
         userRepository.save(User.builder()
                 .username(RandomStringUtils.randomAlphanumeric(5))
                 .nameAndSurname(RandomStringUtils.randomAlphanumeric(5))
                 .pesel(PESEL)
-                .status(UserStatus.DISACTIVE)
+                .status(UserStatus.INACTIVE)
                 .build());
         List<User> users = userService.listAllUsers();
         assertEquals(3, users.size());

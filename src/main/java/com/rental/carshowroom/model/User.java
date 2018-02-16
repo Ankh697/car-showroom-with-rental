@@ -42,7 +42,7 @@ public class User extends AbstractEntity implements UserDetails {
     private String pesel;
     @Enumerated(EnumType.STRING)
     @NotNull
-    private UserStatus status = UserStatus.DISACTIVE;
+    private UserStatus status = UserStatus.INACTIVE;
     @NotNull
     @Pattern(regexp = Patterns.EMAIL, message = "{msg.validation.user.email.pattern}")
     private String email;
