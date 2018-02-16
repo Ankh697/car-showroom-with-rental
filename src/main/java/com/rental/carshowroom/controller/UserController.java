@@ -2,12 +2,14 @@ package com.rental.carshowroom.controller;
 
 import com.rental.carshowroom.model.User;
 import com.rental.carshowroom.service.UserService;
+import com.rental.carshowroom.service.VerificationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
@@ -16,10 +18,12 @@ import java.util.List;
 @RequestMapping("/api/user")
 public class UserController {
     private UserService userService;
+    private VerificationTokenService verificationTokenService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, VerificationTokenService verificationTokenService) {
         this.userService = userService;
+        this.verificationTokenService = verificationTokenService;
     }
 
     @PostMapping
@@ -54,4 +58,20 @@ public class UserController {
     public ResponseEntity<User> getUser(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getUser(id));
     }
+
+    @PostMapping("/registration")
+    public ResponseEntity registerUserAccount(
+            @RequestBody @Valid User user, HttpServletRequest request) {
+        String appUrl = "http://" + request.getServerName() + ":" +
+                request.getServerPort() + request.getContextPath();
+        userService.register(user, appUrl);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/registration/confirm")
+    public ResponseEntity<User> confirmRegistration(@RequestParam("token") String token) {
+        User user = verificationTokenService.activateAccountWithToken(token);
+        return ResponseEntity.ok(userService.updateUser(user, user.getId()));
+    }
 }
+

@@ -45,7 +45,7 @@ public class UserTest {
                 .username(RandomStringUtils.randomAlphanumeric(5))
                 .nameAndSurname(RandomStringUtils.randomAlphanumeric(5))
                 .pesel(PESEL)
-                .status(UserStatus.DISACTIVE)
+                .status(UserStatus.INACTIVE)
                 .build();
     }
 
