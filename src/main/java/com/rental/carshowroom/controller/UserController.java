@@ -1,8 +1,6 @@
 package com.rental.carshowroom.controller;
 
 import com.rental.carshowroom.model.User;
-import com.rental.carshowroom.model.VerificationToken;
-import com.rental.carshowroom.model.enums.UserStatus;
 import com.rental.carshowroom.service.UserService;
 import com.rental.carshowroom.service.VerificationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +58,7 @@ public class UserController {
     public ResponseEntity<User> getUser(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getUser(id));
     }
-    
+
     @PostMapping("/registration")
     public ResponseEntity registerUserAccount(
             @RequestBody @Valid User user, HttpServletRequest request) {
@@ -72,9 +70,7 @@ public class UserController {
 
     @GetMapping("/registration/confirm")
     public ResponseEntity<User> confirmRegistration(@RequestParam("token") String token) {
-        VerificationToken verificationToken = verificationTokenService.getVerificationToken(token);
-        User user = verificationToken.getUser();
-        user.setStatus(UserStatus.ACTIVE);
+        User user = verificationTokenService.activateAccountWithToken(token);
         return ResponseEntity.ok(userService.updateUser(user, user.getId()));
     }
 }

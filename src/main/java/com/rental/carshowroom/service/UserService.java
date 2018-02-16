@@ -4,7 +4,6 @@ import com.rental.carshowroom.exception.NotFoundException;
 import com.rental.carshowroom.exception.enums.NotFoundExceptionCode;
 import com.rental.carshowroom.model.Role;
 import com.rental.carshowroom.model.User;
-import com.rental.carshowroom.model.VerificationToken;
 import com.rental.carshowroom.model.enums.RoleType;
 import com.rental.carshowroom.model.enums.UserStatus;
 import com.rental.carshowroom.repository.UserRepository;

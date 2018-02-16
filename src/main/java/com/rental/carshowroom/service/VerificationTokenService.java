@@ -2,6 +2,7 @@ package com.rental.carshowroom.service;
 
 import com.rental.carshowroom.model.User;
 import com.rental.carshowroom.model.VerificationToken;
+import com.rental.carshowroom.model.enums.UserStatus;
 import com.rental.carshowroom.repository.VerificationTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,5 +42,13 @@ public class VerificationTokenService {
 
     public VerificationToken getVerificationToken(String verificationToken) {
         return verificationTokenRepository.findByToken(verificationToken);
+    }
+
+    public User activateAccountWithToken(String token)
+    {
+        VerificationToken verificationToken = getVerificationToken(token);
+        User user = verificationToken.getUser();
+        user.setStatus(UserStatus.ACTIVE);
+        return user;
     }
 }

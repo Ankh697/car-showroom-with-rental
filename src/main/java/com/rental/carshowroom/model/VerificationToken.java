@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"token"}, name = "verification_tokens")})
 public class VerificationToken {
     private static final int EXPIRATION = 1;
 
