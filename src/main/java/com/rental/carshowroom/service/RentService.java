@@ -26,35 +26,33 @@ public class RentService {
     private PaymentService paymentService;
     private CarValidator carValidator;
     private UserService userService;
+    private CarService carService;
 
-    @Value("${msg.validation.car.notforrent")
+    @Value("${msg.validation.car.notforrent}")
     private String carNotForRent;
 
     private final String STATUS_KEY = "status";
 
     @Autowired
-    public RentService(RentRepository rentRepository, PaymentService paymentService, CarValidator carValidator, UserService userService) {
+    public RentService(RentRepository rentRepository, PaymentService paymentService, CarValidator carValidator, UserService userService, CarService carService) {
         this.rentRepository = rentRepository;
         this.paymentService = paymentService;
         this.carValidator = carValidator;
         this.userService = userService;
+        this.carService = carService;
     }
 
     public Payment rentCar(Rent rent) {
-        Rent preparedRent = prepareRent(rent);
+        rent.setCar(carService.getCar(rent.getCar().getId()));
         rent.getCar().setStatus(CarStatus.RENTED);
-        return paymentService.preparePaymentForRent(preparedRent);
+        return paymentService.preparePaymentForRent(prepareRent(rent));
     }
 
     private Rent prepareRent(Rent rent) {
-        return rentRepository.save(Rent.builder()
-                .status(RentStatus.RESERVED)
-                .car(rent.getCar())
-                .startDate(rent.getStartDate())
-                .endDate(rent.getEndDate())
-                .costPerDay(rent.getCar().getRentCostPerDay())
-                .user(userService.findUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName()))
-                .build());
+        rent.setStatus(RentStatus.RESERVED);
+        rent.setCostPerDay(rent.getCar().getRentCostPerDay());
+        rent.setUser(userService.findUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName()));
+        return rentRepository.save(rent);
     }
 
     public Map<String, String> validateRent(Car car) throws NotFoundException {
@@ -85,7 +83,7 @@ public class RentService {
         return rentRepository.save(rent);
     }
 
-    public Rent confirmCollect(Long id) throws NotFoundException {
+    public Rent collectCar(Long id) throws NotFoundException {
         Rent rent = findRent(id);
         rent.setBorrowDate(LocalDateTime.now());
         return rentRepository.save(rent);

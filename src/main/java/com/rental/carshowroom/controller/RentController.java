@@ -1,5 +1,6 @@
 package com.rental.carshowroom.controller;
 
+import com.rental.carshowroom.model.Payment;
 import com.rental.carshowroom.model.Rent;
 import com.rental.carshowroom.service.CarService;
 import com.rental.carshowroom.service.RentService;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.util.Map;
@@ -30,11 +32,16 @@ public class RentController {
         if (!errors.isEmpty()) {
             return ResponseEntity.badRequest().body(errors);
         }
-        return ResponseEntity.ok(rentService.rentCar(rent));
+        Payment payment = rentService.rentCar(rent);
+        return ResponseEntity
+                .created(ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(payment.getTransaction().getId()).toUri())
+                .body(payment);
     }
 
+    //TODO: validation rent statuses
+
     @PostMapping("/confirm/{id}")
-    @PreAuthorize("hasRole('ROLE_USER') and @rentService.isOwner(#id)")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Rent> confirmRent(@PathVariable("id") Long id) {
         return ResponseEntity.ok(rentService.confirmRent(id));
     }
@@ -53,8 +60,8 @@ public class RentController {
 
     @PostMapping("/collect/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Rent> confirmCollect(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(rentService.confirmCollect(id));
+    public ResponseEntity<Rent> collectCar(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(rentService.collectCar(id));
     }
 
     @GetMapping("/{id}")

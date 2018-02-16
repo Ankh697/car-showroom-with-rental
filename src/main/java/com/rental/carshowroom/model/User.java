@@ -14,8 +14,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -41,8 +41,7 @@ public class User extends AbstractEntity implements UserDetails {
     @Pattern(regexp = Patterns.PESEL, message = "{msg.validation.user.pesel.pattern}")
     private String pesel;
     @Enumerated(EnumType.STRING)
-    @NotNull
-    private UserStatus status = UserStatus.DISACTIVE;
+    private UserStatus status = UserStatus.INACTIVE;
     @NotNull
     @Pattern(regexp = Patterns.EMAIL, message = "{msg.validation.user.email.pattern}")
     private String email;
@@ -58,12 +57,7 @@ public class User extends AbstractEntity implements UserDetails {
     @Override
     @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Set<GrantedAuthority> authorities = new HashSet<>();
-        for (Role role : roles) {
-            GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(role.getRoleType().name());
-            authorities.add(grantedAuthority);
-        }
-        return authorities;
+        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getRoleType().name())).collect(Collectors.toSet());
     }
 
     @Override
@@ -92,6 +86,6 @@ public class User extends AbstractEntity implements UserDetails {
     @Override
     @JsonIgnore
     public boolean isEnabled() {
-        return status == UserStatus.ACTIVE;
+        return status != UserStatus.INACTIVE;
     }
 }

@@ -42,7 +42,7 @@ class AuthServiceConfig extends AuthorizationServerConfigurerAdapter {
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        clients.inMemory()
+        clients.jdbc(dataSource)
                 .withClient(oAuth2ClientId)
                 .secret(oAuth2ClientSecret)
                 .authorizedGrantTypes(oAuth2ClientGrantType)

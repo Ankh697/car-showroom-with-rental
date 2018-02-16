@@ -37,7 +37,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("(hasRole('ROLE_USER') and @userService.isProperUser(#id)) or hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_USER') and @userService.isProperUser(#id))")
     public ResponseEntity<User> update(@PathVariable Long id, @RequestBody @Valid User user) {
         return ResponseEntity.ok(userService.updateUser(user, id));
     }
@@ -50,7 +50,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("(hasRole('ROLE_USER') and @userService.isProperUser(#id)) or hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_USER') and @userService.isProperUser(#id))")
     public ResponseEntity<User> getUser(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getUser(id));
     }

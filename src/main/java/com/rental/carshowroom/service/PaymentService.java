@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -53,7 +55,7 @@ public class PaymentService {
                 .companyName(name)
                 .transaction(rent)
                 .status(PaymentStatus.WAITING)
-                .value(rent.getCostPerDay())
+                .value(rent.getCostPerDay().multiply(BigDecimal.valueOf(ChronoUnit.DAYS.between(rent.getStartDate(), rent.getEndDate()))))
                 .transactionType(TransactionType.RENT).build());
     }
 

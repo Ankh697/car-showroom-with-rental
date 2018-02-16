@@ -5,6 +5,7 @@ import com.rental.carshowroom.exception.enums.NotFoundExceptionCode;
 import com.rental.carshowroom.model.Role;
 import com.rental.carshowroom.model.User;
 import com.rental.carshowroom.model.enums.RoleType;
+import com.rental.carshowroom.model.enums.UserStatus;
 import com.rental.carshowroom.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,18 +23,19 @@ import java.util.Optional;
 @PropertySource("classpath:validationmessages.properties")
 public class UserService {
     private UserRepository userRepository;
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Value("${msg.validation.user.notfound}")
     private String userNotFound;
 
-    private BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     public User addUser(User user) {
+        user.setStatus(UserStatus.INACTIVE);
         user.setRoles(Collections.singleton(new Role(RoleType.ROLE_USER)));
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
@@ -44,8 +46,12 @@ public class UserService {
     }
 
     public User updateUser(User user, Long id) {
-        userRepository.updateUser(id, user.getNameAndSurname(), user.getPesel(), user.getStatus());
-        return userRepository.findOne(id);
+        User userInDb = findUser(id);
+        userInDb.setEmail(user.getEmail());
+        userInDb.setStatus(user.getStatus());
+        userInDb.setPesel(user.getPesel());
+        userInDb.setNameAndSurname(user.getNameAndSurname());
+        return userRepository.save(userInDb);
     }
 
     private User findUser(Long id) throws NotFoundException {
