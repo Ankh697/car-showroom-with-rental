@@ -94,10 +94,5 @@ public class UserService {
     public boolean isProperUser(Long id) {
         return findUser(id).getUsername().equals(SecurityContextHolder.getContext().getAuthentication().getName());
     }
-
-    public void createVerificationTokenForUser(final User user, final String token) {
-        final VerificationToken myToken = new VerificationToken(token, user);
-        tokenRepository.save(myToken);
-    }
 }
 

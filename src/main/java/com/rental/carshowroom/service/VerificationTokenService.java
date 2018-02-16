@@ -36,8 +36,7 @@ public class VerificationTokenService {
     public void sendConfirmationEmail(User user, String appUrl) {
         String token = UUID.randomUUID().toString();
         createVerificationTokenForUser(user, token);
-        StringBuilder messageBuilder = new StringBuilder(message).append("\n").append(appUrl).append("/api/user/registration/confirm?token=").append(token);
-        emailServiceJavaMailSender.sendEmail(user, subject, messageBuilder.toString());
+        emailServiceJavaMailSender.sendEmail(user, subject, message + "\n" + appUrl + "/api/user/registration/confirm?token=" + token);
     }
 
     public VerificationToken getVerificationToken(String verificationToken) {
