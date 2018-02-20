@@ -1,12 +1,12 @@
 package com.rental.carshowroom.service;
 
-import com.rental.carshowroom.exception.NotFoundException;
 import com.rental.carshowroom.model.Car;
 import com.rental.carshowroom.model.Payment;
 import com.rental.carshowroom.model.Sale;
 import com.rental.carshowroom.model.enums.CarStatus;
 import com.rental.carshowroom.model.enums.SaleStatus;
 import com.rental.carshowroom.repository.SaleRepository;
+import com.rental.carshowroom.service.payment.PaymentService;
 import com.rental.carshowroom.validator.CarValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,8 +30,6 @@ public class SaleService {
     @Value("${msg.validation.car.notforsale")
     private String carNotForSale;
 
-    private final String STATUS_KEY = "status";
-
     @Autowired
     public SaleService(SaleRepository saleRepository, PaymentService paymentService, CarValidator carValidator, CarService carService, UserService userService) {
         this.saleRepository = saleRepository;
@@ -51,16 +49,16 @@ public class SaleService {
                 .build());
     }
 
-    public Payment buyCar(Long id) throws NotFoundException {
+    public Payment buyCar(Long id) {
         Sale sale = prepareSale(carService.getCar(id));
         sale.getCar().setStatus(CarStatus.SOLD);
         return paymentService.preparePaymentForSale(sale);
     }
 
-    public Map<String, String> validateBuy(Car car) throws NotFoundException {
+    public Map<String, String> validateBuy(Car car) {
         Map<String, String> errors = new LinkedHashMap<>();
         if (!carValidator.validateIfStatusCorrectForOperation(car, CarStatus.FOR_SALE)) {
-            errors.put(STATUS_KEY, carNotForSale);
+            errors.put("status", carNotForSale);
         }
         return errors;
     }

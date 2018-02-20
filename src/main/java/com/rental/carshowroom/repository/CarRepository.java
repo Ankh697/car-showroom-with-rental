@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CarRepository extends PagingAndSortingRepository<Car, Long> {
@@ -21,4 +22,6 @@ public interface CarRepository extends PagingAndSortingRepository<Car, Long> {
     void updateStatus(@Param("id") Long id, @Param("status") CarStatus status);
 
     List<Car> findAllByStatus(CarStatus carStatus);
+
+    Optional<Car> findById(Long id);
 }

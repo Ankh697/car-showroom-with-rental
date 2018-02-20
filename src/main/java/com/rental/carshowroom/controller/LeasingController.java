@@ -5,7 +5,6 @@ import com.rental.carshowroom.model.Payment;
 import com.rental.carshowroom.service.CarService;
 import com.rental.carshowroom.service.LeasingService;
 import com.rental.carshowroom.util.LeasingUtil;
-import com.rental.carshowroom.validator.groups.CalculateLeasingValidationGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +45,7 @@ public class LeasingController {
     @PostMapping
     public ResponseEntity<?> addLeasing(@RequestBody @Valid Leasing leasing) {
         Map<String, String> errors = leasingService.validateLeasing(leasing);
-        if(errors.isEmpty()){
+        if(!errors.isEmpty()){
             return ResponseEntity.badRequest().body(errors);
         }
         Payment payment = leasingService.addLeasing(leasing);
@@ -61,7 +60,7 @@ public class LeasingController {
     }
 
     @PostMapping("/calculate")
-    public ResponseEntity<BigDecimal> calculateLeasing(@RequestBody @Validated({CalculateLeasingValidationGroup.class}) Leasing leasing)
+    public ResponseEntity<BigDecimal> calculateLeasing(@RequestBody @Validated({Leasing.CalculateLeasingValidationGroup.class}) Leasing leasing)
     {
         return ResponseEntity.ok(LeasingUtil.calculateLeasing(leasing, carService.getCar(leasing.getCar().getId())));
     }

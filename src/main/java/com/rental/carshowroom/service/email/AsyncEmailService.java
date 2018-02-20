@@ -1,4 +1,4 @@
-package com.rental.carshowroom.service;
+package com.rental.carshowroom.service.email;
 
 import com.rental.carshowroom.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,12 +8,12 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EmailServiceJavaMailSender implements EmailService {
+public class AsyncEmailService implements EmailService {
 
     private final JavaMailSender mailSender;
 
     @Autowired
-    public EmailServiceJavaMailSender(JavaMailSender mailSender) {
+    public AsyncEmailService(JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
 

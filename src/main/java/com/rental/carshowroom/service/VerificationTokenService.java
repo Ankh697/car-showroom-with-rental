@@ -1,9 +1,12 @@
 package com.rental.carshowroom.service;
 
+import com.rental.carshowroom.exception.NotFoundException;
+import com.rental.carshowroom.exception.enums.NotFoundExceptionCode;
 import com.rental.carshowroom.model.User;
 import com.rental.carshowroom.model.VerificationToken;
 import com.rental.carshowroom.model.enums.UserStatus;
 import com.rental.carshowroom.repository.VerificationTokenRepository;
+import com.rental.carshowroom.service.email.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -16,18 +19,18 @@ import java.util.UUID;
 public class VerificationTokenService {
 
     private VerificationTokenRepository verificationTokenRepository;
-    private EmailService emailServiceJavaMailSender;
+    private EmailService emailService;
 
-    @Value("${message.registrationsubject}")
+    @Value("${message.registration.subject}")
     private String subject;
 
-    @Value("${message.registrationemail}")
+    @Value("${message.registration.email}")
     private String message;
 
     @Autowired
-    public VerificationTokenService(VerificationTokenRepository verificationTokenRepository, EmailService emailServiceJavaMailSender) {
+    public VerificationTokenService(VerificationTokenRepository verificationTokenRepository, EmailService emailService) {
         this.verificationTokenRepository = verificationTokenRepository;
-        this.emailServiceJavaMailSender = emailServiceJavaMailSender;
+        this.emailService = emailService;
     }
 
     private void createVerificationTokenForUser(final User user, final String token) {
@@ -37,15 +40,14 @@ public class VerificationTokenService {
     public void sendConfirmationEmail(User user, String appUrl) {
         String token = UUID.randomUUID().toString();
         createVerificationTokenForUser(user, token);
-        emailServiceJavaMailSender.sendEmail(user, subject, message + "\n" + appUrl + "/api/user/registration/confirm?token=" + token);
+        emailService.sendEmail(user, subject, message + "\n" + appUrl + "/api/user/registration/confirm?token=" + token);
     }
 
-    public VerificationToken getVerificationToken(String verificationToken) {
-        return verificationTokenRepository.findByToken(verificationToken);
+    private VerificationToken getVerificationToken(String verificationToken) {
+        return verificationTokenRepository.findByToken(verificationToken).orElseThrow(() -> new NotFoundException(NotFoundExceptionCode.TOKEN_NOT_FOUND));
     }
 
-    public User activateAccountWithToken(String token)
-    {
+    public User activateAccountWithToken(String token) {
         VerificationToken verificationToken = getVerificationToken(token);
         User user = verificationToken.getUser();
         user.setStatus(UserStatus.ACTIVE);

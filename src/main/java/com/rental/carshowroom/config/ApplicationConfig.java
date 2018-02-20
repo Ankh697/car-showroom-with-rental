@@ -15,7 +15,7 @@ import java.util.Properties;
 
 public class ApplicationConfig {
 
-    @Value("${emailadress}")
+    @Value("${address}")
     private String emailAdress;
 
     @Value("${password}")

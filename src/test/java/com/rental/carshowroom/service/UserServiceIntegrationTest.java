@@ -34,7 +34,6 @@ public class UserServiceIntegrationTest {
     private User user;
     private User tempUser;
     private final String PESEL = RandomStringUtils.randomNumeric(11);
-    private final String email = "xxx@example.com";
 
     @Before
     public void setup() {
@@ -43,7 +42,7 @@ public class UserServiceIntegrationTest {
                 .nameAndSurname(RandomStringUtils.randomAlphanumeric(5))
                 .pesel(PESEL)
                 .roles(Role.userRoles())
-                .email(email)
+                .email("xxx@example.com")
                 .password(RandomStringUtils.randomAlphabetic(10))
                 .status(UserStatus.ACTIVE)
                 .build();
@@ -93,6 +92,12 @@ public class UserServiceIntegrationTest {
         User updatedUser = userService.updateUser(tempUser, user.getId());
         assertEquals(user.getUsername(), updatedUser.getUsername());
         assertEquals(tempUser.getNameAndSurname(), updatedUser.getNameAndSurname());
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void updateUser_NotFound_Test() {
+        tempUser.setNameAndSurname(RandomStringUtils.randomAlphabetic(10));
+        userService.updateUser(tempUser, user.getId());
     }
 
     @Test(expected = NotFoundException.class)

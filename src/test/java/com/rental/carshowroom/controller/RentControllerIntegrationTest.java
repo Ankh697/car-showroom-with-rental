@@ -105,16 +105,6 @@ public class RentControllerIntegrationTest extends AbstractWebIntegrationTest {
                 .andReturn();
     }
 
-    /*Rent addedRent = rentRepository.findOne(1L);
-        assertEquals(RentStatus.RESERVED, addedRent.getStatus());
-        assertEquals(CarStatus.RENTED, addedRent.getCar().getStatus());
-        assertEquals(car.getId(), addedRent.getCar().getId());
-        assertEquals(car.getRentCostPerDay(), addedRent.getCostPerDay());
-        Payment payment = paymentRepository.findOne(1L);
-        assertEquals(PaymentStatus.WAITING, payment.getStatus());
-        assertEquals(addedRent, payment.getTransaction());
-        assertEquals(TransactionType.RENT, payment.getTransactionType());*/
-
     @Test
     public void rentCar_NotForRent_Test() throws Exception {
         car.setStatus(CarStatus.FOR_SALE);

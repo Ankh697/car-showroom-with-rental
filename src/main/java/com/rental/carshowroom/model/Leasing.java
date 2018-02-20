@@ -4,7 +4,6 @@ package com.rental.carshowroom.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.rental.carshowroom.annotation.NotPast;
 import com.rental.carshowroom.model.enums.LeasingStatus;
-import com.rental.carshowroom.validator.groups.CalculateLeasingValidationGroup;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
@@ -62,4 +61,5 @@ public class Leasing extends Transaction {
     @NumberFormat(style = NumberFormat.Style.CURRENCY)
     private BigDecimal initialPayment;
 
+    public interface CalculateLeasingValidationGroup {}
 }

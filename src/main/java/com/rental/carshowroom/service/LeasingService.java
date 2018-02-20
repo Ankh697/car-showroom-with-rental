@@ -8,6 +8,7 @@ import com.rental.carshowroom.model.Payment;
 import com.rental.carshowroom.model.enums.CarStatus;
 import com.rental.carshowroom.model.enums.LeasingStatus;
 import com.rental.carshowroom.repository.LeasingRepository;
+import com.rental.carshowroom.service.payment.PaymentService;
 import com.rental.carshowroom.validator.LeasingValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,22 +49,16 @@ public class LeasingService {
         return leasingRepository.findAll();
     }
 
-    public Leasing findLeasing(Long id) throws NotFoundException {
-        Leasing leasing = leasingRepository.findOne(id);
-        if (leasing != null) {
-            return leasing;
-        } else {
-            throw new NotFoundException(NotFoundExceptionCode.LEASING_NOT_FOUND);
-        }
+    public Leasing findLeasing(Long id) {
+        return leasingRepository.findById(id).orElseThrow(() -> new NotFoundException(NotFoundExceptionCode.LEASING_NOT_FOUND));
     }
-
 
     public Payment addLeasing(Leasing leasing) {
         Leasing preparedLeasing = prepareLeasing(leasing);
         if (preparedLeasing.getInitialPayment().compareTo(BigDecimal.ZERO) > 0) {
             return paymentService.preparePaymentForLeasing(preparedLeasing);
         } else {
-            return new Payment(preparedLeasing);
+            return Payment.builder().transaction(preparedLeasing).build();
         }
     }
 
@@ -81,9 +76,9 @@ public class LeasingService {
     public Map<String, String> validateLeasing(Leasing leasing) {
         Map<String, String> errors = new HashMap<>();
         Car car = carService.getCar(leasing.getCar().getId());
-        leasingValidator.validateLeasingLenghth(car.getProductionYear(), leasing.getInstallments(), errors);
+        leasingValidator.validateLeasingLength(car.getProductionYear(), leasing.getInstallments(), errors);
         leasingValidator.validateLeasingStatus(car, errors);
-        leasingValidator.validateLeasingInitiallPayment(leasing, car, errors);
+        leasingValidator.validateLeasingInitialPayment(leasing, car, errors);
         return errors;
     }
 

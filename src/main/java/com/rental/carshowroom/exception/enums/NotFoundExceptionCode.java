@@ -13,6 +13,7 @@ public enum NotFoundExceptionCode {
     LEASING_NOT_FOUND("msg.validation.leasing.notfound"),
     PAYMENT_NOT_FOUND("msg.validation.payment.notfound"),
     SALE_NOT_FOUND("msg.validation.sale.notfound"),
+    TOKEN_NOT_FOUND("msg.validation.token.notfound"),
     RENT_NOT_FOUND("msg.validation.rent.notfound");
 
     private String descriptionProperty;

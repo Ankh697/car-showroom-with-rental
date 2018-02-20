@@ -1,6 +1,5 @@
 package com.rental.carshowroom.validator;
 
-import com.rental.carshowroom.exception.NotFoundException;
 import com.rental.carshowroom.model.Car;
 import com.rental.carshowroom.model.Leasing;
 import com.rental.carshowroom.model.enums.CarStatus;
@@ -22,9 +21,6 @@ public class LeasingValidator {
     @Value("${msg.validation.leasing.leasinglenght")
     private String leasingLenghth;
 
-    private final String STATUS_KEY = "status";
-    private final String INSTALLMENTS_KEY = "installments";
-
     private CarValidator carValidator;
 
     @Autowired
@@ -32,21 +28,21 @@ public class LeasingValidator {
         this.carValidator = carValidator;
     }
 
-    public void validateLeasingInitiallPayment(Leasing leasing, Car car, Map<String, String> errors) {
+    public void validateLeasingInitialPayment(Leasing leasing, Car car, Map<String, String> errors) {
         if (leasing.getInitialPayment().compareTo(car.getPriceBrutto().multiply(BigDecimal.valueOf(0.3))) > 0) {
             errors.put("initialPayment", initialPaymentError);
         }
     }
 
-    public void validateLeasingStatus(Car car, Map<String, String> errors) throws NotFoundException {
+    public void validateLeasingStatus(Car car, Map<String, String> errors) {
         if (!carValidator.validateIfStatusCorrectForOperation(car, CarStatus.FOR_SALE)) {
-            errors.put(STATUS_KEY, carNotForLease);
+            errors.put("status", carNotForLease);
         }
     }
 
-    public void validateLeasingLenghth(int productionYear, Long installments, Map<String, String> errors) throws NotFoundException {
+    public void validateLeasingLength(int productionYear, Long installments, Map<String, String> errors) {
         if (LeasingUtil.calculateTimeBetweenProductionYearAndNow(productionYear) + (installments / 12) > 10) {
-            errors.put(INSTALLMENTS_KEY, leasingLenghth);
+            errors.put("installments", leasingLenghth);
         }
     }
 }

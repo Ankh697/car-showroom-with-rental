@@ -45,7 +45,7 @@ public class UserTest {
                 .username(RandomStringUtils.randomAlphanumeric(5))
                 .nameAndSurname(RandomStringUtils.randomAlphanumeric(5))
                 .password(RandomStringUtils.randomAlphanumeric(5))
-                .email("xxx@example.com")
+                .email("xxx.xxx@example.com")
                 .pesel(RandomStringUtils.randomNumeric(11))
                 .status(UserStatus.INACTIVE)
                 .build();
@@ -107,11 +107,25 @@ public class UserTest {
 
     @Test
     public void wrongEmailPatternTest() {
-        user.setEmail(RandomStringUtils.randomAlphabetic(10));
+        user.setEmail(RandomStringUtils.randomNumeric(10));
+        validateWrongEmailPattern();
+        user.setEmail("xxx=xxx@example.pl");
+        validateWrongEmailPattern();
+    }
+
+    private void validateWrongEmailPattern() {
         violations = validator.validate(user);
         assertEquals(1, violations.size());
         assertEquals(emailPattern, violations.iterator().next().getMessage());
     }
+
+    @Test
+    public void tooLongAndWrongPatternEmailTest() {
+        user.setEmail(RandomStringUtils.randomAlphanumeric(51));
+        violations = validator.validate(user);
+        assertEquals(2, violations.size());
+    }
+
 
     @Test
     public void nullPasswordTest() {
@@ -180,6 +194,14 @@ public class UserTest {
     @Test
     public void wrongPeselPatternTest() {
         user.setPesel(RandomStringUtils.randomAlphabetic(11));
+        validatePeselPattern();
+        user.setPesel(RandomStringUtils.randomNumeric(10));
+        validatePeselPattern();
+        user.setPesel(RandomStringUtils.randomNumeric(12));
+        validatePeselPattern();
+    }
+
+    private void validatePeselPattern() {
         violations = validator.validate(user);
         assertEquals(1, violations.size());
         assertEquals(wrongPeselPattern, violations.iterator().next().getMessage());

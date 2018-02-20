@@ -1,4 +1,4 @@
-package com.rental.carshowroom.service;
+package com.rental.carshowroom.service.email;
 
 import com.rental.carshowroom.model.User;
 

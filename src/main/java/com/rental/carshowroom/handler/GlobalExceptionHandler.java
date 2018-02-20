@@ -39,16 +39,13 @@ public class GlobalExceptionHandler {
     @Value("${msg.validation.json.syntax.wrong}")
     private String wrongJsonSyntaxError;
 
-    @Value("${msg.validation.wrongparameters}")
-    private String wrongParametersError;
-
-    private String errorKey = "error";
+    private final String ERROR_KEY = "error";
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public Map<String, String> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
-        return Collections.singletonMap(errorKey, wrongJsonSyntaxError);
+        return Collections.singletonMap(ERROR_KEY, wrongJsonSyntaxError);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -67,7 +64,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public Map<String, String> handleIllegalStateOrArgumentOrMappingException(Exception e) {
-        return Collections.singletonMap(errorKey, wrongJsonSyntaxError);
+        return Collections.singletonMap(ERROR_KEY, wrongJsonSyntaxError);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -81,13 +78,13 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public Map<String, String> handleTypeMismatchException(TypeMismatchException e) {
-        return Collections.singletonMap(errorKey, wrongParametersError);
+        return Collections.singletonMap(ERROR_KEY, wrongJsonSyntaxError);
     }
 
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
     public Map<String, String> handleNotFoundException(NotFoundException e) {
-        return Collections.singletonMap(errorKey, env.getProperty(e.getCode().getDescriptionProperty()));
+        return Collections.singletonMap(ERROR_KEY, env.getProperty(e.getCode().getDescriptionProperty()));
     }
 }

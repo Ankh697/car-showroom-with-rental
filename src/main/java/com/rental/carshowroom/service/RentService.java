@@ -8,6 +8,7 @@ import com.rental.carshowroom.model.Rent;
 import com.rental.carshowroom.model.enums.CarStatus;
 import com.rental.carshowroom.model.enums.RentStatus;
 import com.rental.carshowroom.repository.RentRepository;
+import com.rental.carshowroom.service.payment.PaymentService;
 import com.rental.carshowroom.validator.CarValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,8 +32,6 @@ public class RentService {
     @Value("${msg.validation.car.notforrent}")
     private String carNotForRent;
 
-    private final String STATUS_KEY = "status";
-
     @Autowired
     public RentService(RentRepository rentRepository, PaymentService paymentService, CarValidator carValidator, UserService userService, CarService carService) {
         this.rentRepository = rentRepository;
@@ -55,27 +54,27 @@ public class RentService {
         return rentRepository.save(rent);
     }
 
-    public Map<String, String> validateRent(Car car) throws NotFoundException {
+    public Map<String, String> validateRent(Car car) {
         Map<String, String> errors = new LinkedHashMap<>();
         if (!carValidator.validateIfStatusCorrectForOperation(car, CarStatus.FOR_RENT)) {
-            errors.put(STATUS_KEY, carNotForRent);
+            errors.put("status", carNotForRent);
         }
         return errors;
     }
 
-    public Rent confirmRent(Long id) throws NotFoundException {
+    public Rent confirmRent(Long id) {
         Rent rent = findRent(id);
         rent.setStatus(RentStatus.CONFIRMED);
         return rentRepository.save(rent);
     }
 
-    public Rent cancelRent(Long id) throws NotFoundException {
+    public Rent cancelRent(Long id) {
         Rent rent = findRent(id);
         rent.setStatus(RentStatus.CANCELLED);
         return rentRepository.save(rent);
     }
 
-    public Rent finishRent(Long id) throws NotFoundException {
+    public Rent finishRent(Long id) {
         Rent rent = findRent(id);
         rent.setStatus(RentStatus.FINISHED);
         rent.setReturnDate(LocalDateTime.now());
@@ -83,19 +82,14 @@ public class RentService {
         return rentRepository.save(rent);
     }
 
-    public Rent collectCar(Long id) throws NotFoundException {
+    public Rent collectCar(Long id) {
         Rent rent = findRent(id);
         rent.setBorrowDate(LocalDateTime.now());
         return rentRepository.save(rent);
     }
 
-    public Rent findRent(Long id) throws NotFoundException {
-        Rent rent = rentRepository.findOne(id);
-        if (rent != null) {
-            return rent;
-        } else {
-            throw new NotFoundException(NotFoundExceptionCode.RENT_NOT_FOUND);
-        }
+    public Rent findRent(Long id) {
+        return rentRepository.findById(id).orElseThrow(() -> new NotFoundException(NotFoundExceptionCode.RENT_NOT_FOUND));
     }
 
     public boolean isOwner(Long id) {

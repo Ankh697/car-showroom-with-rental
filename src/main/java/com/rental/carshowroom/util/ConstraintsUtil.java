@@ -1,6 +1,8 @@
 package com.rental.carshowroom.util;
 
 public class ConstraintsUtil {
+    private ConstraintsUtil() {}
+
     public static String getConstraintMessageFromException(Throwable throwable) {
         String msg = throwable.getLocalizedMessage();
         StringBuilder builder;

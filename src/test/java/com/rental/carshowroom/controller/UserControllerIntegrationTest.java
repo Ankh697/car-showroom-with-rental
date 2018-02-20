@@ -10,14 +10,17 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -25,11 +28,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @DataJpaTest
 @AutoConfigureMockMvc
+@TestPropertySource("classpath:validationmessages.properties")
 public class UserControllerIntegrationTest extends AbstractWebIntegrationTest {
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private ObjectMapper mapper;
+
+    @Value("${msg.validation.user.notfound}")
+    private String userNotFound;
+    private String notBlankMessage = "may not be empty";
+    private String notNullMessage = "may not be null";
+    @Value("${msg.validation.user.pesel.pattern}")
+    private String wrongPeselPattern;
+    @Value("${msg.validation.user.username.size}")
+    private String usernameSize;
+    @Value("${msg.validation.user.nameandsurname.size}")
+    private String nameAndSurnameSize;
+    @Value("${msg.validation.user.email.pattern}")
+    private String emailPattern;
+    @Value("${msg.validation.user.email.size}")
+    private String emailSize;
+    @Value("${msg.validation.json.syntax.wrong}")
+    private String wrongJsonSyntaxError;
 
     private User user;
     private User admin;
@@ -39,7 +60,6 @@ public class UserControllerIntegrationTest extends AbstractWebIntegrationTest {
     private final String email = "xxx@example.com";
     private final String PESEL = RandomStringUtils.randomNumeric(11);
 
-    //TODO: not found, validation failures
     @Before
     public void setup() {
         initMockMvc();
@@ -77,8 +97,80 @@ public class UserControllerIntegrationTest extends AbstractWebIntegrationTest {
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", containsString("/api/user")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(email))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.status").value(UserStatus.INACTIVE.name()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.status").value(UserStatus.ACTIVE.name()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.username").value(username))
+                .andReturn();
+    }
+
+    @Test
+    public void addUser_ValidationFailureAllNulls_Test() throws Exception {
+        mockMvc.perform(authenticatedToken(post("/api/user"), admin)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .with(csrf())
+                .content("{ }"))
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(notNullMessage))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.username").value(notBlankMessage))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.nameAndSurname").value(notBlankMessage))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.pesel").value(notNullMessage))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.password").value(notBlankMessage))
+                .andReturn();
+    }
+
+    @Test
+    public void addUser_ValidationFailureWrongPatterns_Test() throws Exception {
+        user.setEmail(RandomStringUtils.randomNumeric(19));
+        user.setPesel(RandomStringUtils.randomAlphabetic(5));
+        mockMvc.perform(authenticatedToken(post("/api/user"), admin)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .with(csrf())
+                .content(mapper.writeValueAsBytes(user)))
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(emailPattern))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.pesel").value(wrongPeselPattern))
+                .andReturn();
+    }
+
+    @Test
+    public void addUser_ValidationFailureWrongSize_Test() throws Exception {
+        user.setEmail(RandomStringUtils.randomAlphabetic(50) + "@example.com");
+        user.setUsername(RandomStringUtils.randomAlphabetic(25));
+        user.setNameAndSurname(RandomStringUtils.randomAlphabetic(110));
+        mockMvc.perform(authenticatedToken(post("/api/user"), admin)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .with(csrf())
+                .content(mapper.writeValueAsBytes(user)))
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(emailSize))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.username").value(usernameSize))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.nameAndSurname").value(nameAndSurnameSize))
+                .andReturn();
+    }
+
+    @Test
+    public void addUser_ValidationFailureAllBlank_Test() throws Exception {
+        user.setUsername("   ");
+        user.setNameAndSurname("   ");
+        user.setPassword("   ");
+        mockMvc.perform(authenticatedToken(post("/api/user"), admin)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .with(csrf())
+                .content(mapper.writeValueAsBytes(user)))
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.password").value(notBlankMessage))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.username").value(notBlankMessage))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.nameAndSurname").value(notBlankMessage))
+                .andReturn();
+    }
+
+    @Test
+    public void addUser_WrongJsonSyntax_Test() throws Exception {
+        mockMvc.perform(authenticatedToken(post("/api/user"), admin)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .with(csrf())
+                .content("{ x }"))
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error").value(wrongJsonSyntaxError))
                 .andReturn();
     }
 
@@ -166,6 +258,27 @@ public class UserControllerIntegrationTest extends AbstractWebIntegrationTest {
     }
 
     @Test
+    public void updateUser_NotFound_Test() throws Exception {
+        mockMvc.perform(authenticatedToken(put("/api/user/1"), admin)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .with(csrf())
+                .content(mapper.writeValueAsBytes(toUpdate)))
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error").value(userNotFound))
+                .andReturn();
+    }
+
+    @Test
+    public void updateUser_NotFoundAndUnauthorized_Test() throws Exception {
+        mockMvc.perform(put("/api/user/1")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .with(csrf())
+                .content(mapper.writeValueAsBytes(toUpdate)))
+                .andExpect(status().isUnauthorized())
+                .andReturn();
+    }
+
+    @Test
     public void updateUser_Unauthorized_Test() throws Exception {
         userRepository.save(user);
         mockMvc.perform(put("/api/user/" + user.getId())
@@ -198,7 +311,6 @@ public class UserControllerIntegrationTest extends AbstractWebIntegrationTest {
                 .with(csrf()))
                 .andExpect(status().isNoContent())
                 .andReturn();
-        assertNull(userRepository.findOne(user.getId()));
     }
 
     @Test
@@ -208,7 +320,23 @@ public class UserControllerIntegrationTest extends AbstractWebIntegrationTest {
                 .with(csrf()))
                 .andExpect(status().isNoContent())
                 .andReturn();
-        assertNull(userRepository.findOne(user.getId()));
+    }
+
+    @Test
+    public void deleteUser_NotFound_Test() throws Exception {
+        mockMvc.perform(authenticatedToken(delete("/api/user/1"), admin)
+                .with(csrf()))
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error").value(userNotFound))
+                .andReturn();
+    }
+
+    @Test
+    public void deleteUser_NotFoundAndUnauthorized_Test() throws Exception {
+        mockMvc.perform(delete("/api/user/1")
+                .with(csrf()))
+                .andExpect(status().isUnauthorized())
+                .andReturn();
     }
 
     @Test
@@ -260,6 +388,23 @@ public class UserControllerIntegrationTest extends AbstractWebIntegrationTest {
     }
 
     @Test
+    public void getUser_NotFoundAdmin_Test() throws Exception {
+        mockMvc.perform(authenticatedToken(get("/api/user/1"), admin)
+                .with(csrf()))
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error").value(userNotFound))
+                .andReturn();
+    }
+
+    @Test
+    public void getUser_NotFoundAndUnauthorized_Test() throws Exception {
+        mockMvc.perform(get("/api/user/1")
+                .with(csrf()))
+                .andExpect(status().isUnauthorized())
+                .andReturn();
+    }
+
+    @Test
     public void getUser_NotOwnProfile_Test() throws Exception {
         userRepository.save(user);
         User testUser = User.builder()
@@ -283,18 +428,14 @@ public class UserControllerIntegrationTest extends AbstractWebIntegrationTest {
     }
 
     private void saveTestUsers() {
-        userRepository.save(user);
+        for (int i = 0; i < 3; i++) {
+            saveTestUser();
+        }
+    }
+
+    private void saveTestUser() {
         userRepository.save(User.builder()
                 .username(RandomStringUtils.randomAlphabetic(6))
-                .nameAndSurname(RandomStringUtils.randomAlphabetic(5))
-                .pesel(PESEL)
-                .roles(Role.userRoles())
-                .email(email)
-                .status(UserStatus.ACTIVE)
-                .password(password)
-                .build());
-        userRepository.save(User.builder()
-                .username(RandomStringUtils.randomAlphabetic(7))
                 .nameAndSurname(RandomStringUtils.randomAlphabetic(5))
                 .pesel(PESEL)
                 .roles(Role.userRoles())

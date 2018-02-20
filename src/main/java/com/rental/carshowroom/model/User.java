@@ -43,6 +43,7 @@ public class User extends AbstractEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserStatus status = UserStatus.INACTIVE;
     @NotNull
+    @Size(max = 50, message = "{msg.validation.user.email.size}")
     @Pattern(regexp = Patterns.EMAIL, message = "{msg.validation.user.email.pattern}")
     private String email;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

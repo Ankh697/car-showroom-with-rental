@@ -12,7 +12,6 @@ public class DateNotInPastValidator implements ConstraintValidator<NotPast, Loca
 
     @Override
     public void initialize(NotPast notPast) {
-
     }
 
     @Override

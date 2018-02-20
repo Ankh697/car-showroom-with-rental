@@ -1,6 +1,7 @@
 package com.rental.carshowroom.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.rental.carshowroom.model.enums.PaymentStatus;
 import com.rental.carshowroom.model.enums.TransactionType;
 import lombok.*;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Payment extends AbstractEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -43,8 +45,4 @@ public class Payment extends AbstractEntity {
     private String companyName;
     @Transient
     private String address;
-
-    public Payment(Leasing preparedLeasing) {
-        this.transaction=transaction;
-    }
 }

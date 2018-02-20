@@ -43,12 +43,12 @@ public class CarController {
 
     @GetMapping("/buy")
     public ResponseEntity<List<Car>> getAllAviableCarsToLeaseOrBuy() {
-        return ResponseEntity.ok(carService.findAllAviableCarsToLeaseOrBuy());
+        return ResponseEntity.ok(carService.findAllAvailableCarsToLeaseOrBuy());
     }
 
     @GetMapping("/rent")
     public ResponseEntity<List<Car>> getAllAvaibleCarsToRent() {
-        return ResponseEntity.ok(carService.findAllAvaibleCarsToRent());
+        return ResponseEntity.ok(carService.findAllAvailableCarsToRent());
     }
 
     @PutMapping("/{id}")

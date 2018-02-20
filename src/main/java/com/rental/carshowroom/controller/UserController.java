@@ -60,10 +60,8 @@ public class UserController {
     }
 
     @PostMapping("/registration")
-    public ResponseEntity registerUserAccount(
-            @RequestBody @Valid User user, HttpServletRequest request) {
-        String appUrl = "http://" + request.getServerName() + ":" +
-                request.getServerPort() + request.getContextPath();
+    public ResponseEntity registerUserAccount(@RequestBody @Valid User user, HttpServletRequest request) {
+        String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
         userService.register(user, appUrl);
         return ResponseEntity.ok().build();
     }

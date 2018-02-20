@@ -26,17 +26,12 @@ public class CarService {
         return carRepository.findAll();
     }
 
-    public Car getCar(Long id) throws NotFoundException {
+    public Car getCar(Long id) {
         return findCar(id);
     }
 
-    private Car findCar(Long id) throws NotFoundException {
-        Car car = carRepository.findOne(id);
-        if (car != null) {
-            return car;
-        } else {
-            throw new NotFoundException(NotFoundExceptionCode.CAR_NOT_FOUND);
-        }
+    private Car findCar(Long id) {
+        return carRepository.findById(id).orElseThrow(() -> new NotFoundException(NotFoundExceptionCode.CAR_NOT_FOUND));
     }
 
     private BigDecimal calculateNetto(BigDecimal priceBrutto) {
@@ -55,11 +50,11 @@ public class CarService {
         carRepository.delete(id);
     }
 
-    public List<Car> findAllAviableCarsToLeaseOrBuy() {
+    public List<Car> findAllAvailableCarsToLeaseOrBuy() {
         return carRepository.findAllByStatus(CarStatus.FOR_SALE);
     }
 
-    public List<Car> findAllAvaibleCarsToRent() {
+    public List<Car> findAllAvailableCarsToRent() {
         return carRepository.findAllByStatus(CarStatus.FOR_RENT);
     }
 

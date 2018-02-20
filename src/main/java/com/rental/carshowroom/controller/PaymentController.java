@@ -1,7 +1,7 @@
 package com.rental.carshowroom.controller;
 
 import com.rental.carshowroom.model.Payment;
-import com.rental.carshowroom.service.PaymentService;
+import com.rental.carshowroom.service.payment.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

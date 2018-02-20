@@ -7,6 +7,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class LeasingUtil {
+    private LeasingUtil() {
+    }
 
     public static BigDecimal calculateLeasing(Leasing leasing, Car car) {
         BigDecimal priceBrutto = car.getPriceBrutto();
