@@ -9,6 +9,7 @@ import com.rental.carshowroom.validator.groups.CalculateLeasingValidationGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -39,14 +40,16 @@ public class LeasingController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Leasing> getLeasingById(@PathVariable Long id) {
         return ResponseEntity.ok(leasingService.findLeasing(id));
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<?> addLeasing(@RequestBody @Valid Leasing leasing) {
         Map<String, String> errors = leasingService.validateLeasing(leasing);
-        if(errors.isEmpty()){
+        if(!errors.isEmpty()){
             return ResponseEntity.badRequest().body(errors);
         }
         Payment payment = leasingService.addLeasing(leasing);
@@ -66,12 +69,14 @@ public class LeasingController {
         return ResponseEntity.ok(LeasingUtil.calculateLeasing(leasing, carService.getCar(leasing.getCar().getId())));
     }
 
-    @PatchMapping("/cancel/{id}")
+    @PostMapping("/cancel/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Leasing> cancelLeasing(@PathVariable("id") Long id) {
         return ResponseEntity.ok(leasingService.cancelLeasing(id));
     }
 
-    @PatchMapping("/finish/{id}")
+    @PostMapping("/finish/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Leasing> finishLeasing(@PathVariable("id") Long id) {
         return ResponseEntity.ok(leasingService.finishLeasing(id));
     }

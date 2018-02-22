@@ -15,11 +15,11 @@ import java.util.Map;
 @Service
 public class LeasingValidator {
 
-    @Value("${msg.validation.leasing.initialpayment.value")
+    @Value("${msg.validation.leasing.initialpayment.value}")
     private String initialPaymentError;
-    @Value("${msg.validation.car.notforlease")
+    @Value("${msg.validation.car.notforlease}")
     private String carNotForLease;
-    @Value("${msg.validation.leasing.leasinglenght")
+    @Value("${msg.validation.leasing.lenght}")
     private String leasingLenghth;
 
     private final String STATUS_KEY = "status";

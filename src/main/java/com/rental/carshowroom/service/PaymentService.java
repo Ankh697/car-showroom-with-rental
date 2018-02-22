@@ -136,7 +136,7 @@ public class PaymentService {
 
     private void updateAcceptedLeasing(Transaction transaction) {
         Leasing leasing = (Leasing) transaction;
-        leasing.setLeasingStatus(LeasingStatus.ACCEPTED);
+        leasing.setStatus(LeasingStatus.ACCEPTED);
     }
 
     private void updateAcceptedPaidInstallment(Transaction transaction) {
@@ -146,7 +146,7 @@ public class PaymentService {
 
     private void updateDeclinedLeasing(Transaction transaction) {
         Leasing leasing = (Leasing) transaction;
-        leasing.setLeasingStatus(LeasingStatus.REJECTED);
+        leasing.setStatus(LeasingStatus.REJECTED);
         leasing.getCar().setStatus(CarStatus.FOR_SALE);
     }
 

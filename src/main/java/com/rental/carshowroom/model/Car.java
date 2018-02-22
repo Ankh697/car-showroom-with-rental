@@ -50,7 +50,7 @@ public class Car extends AbstractEntity {
     @NumberFormat(style = NumberFormat.Style.CURRENCY)
     private BigDecimal rentCostPerDay;
     @NotNull
-    private Long engineCapacity;
+    private Double engineCapacity;
     @NotNull
     private Long enginePower;
     @Enumerated(EnumType.STRING)

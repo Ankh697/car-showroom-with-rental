@@ -58,7 +58,7 @@ public class RentControllerIntegrationTest extends AbstractWebIntegrationTest {
         car = Car.builder()
                 .model(RandomStringUtils.randomAlphabetic(5))
                 .numberPlate(RandomStringUtils.randomAlphabetic(10))
-                .engineCapacity(RandomUtils.nextLong())
+                .engineCapacity(RandomUtils.nextDouble())
                 .enginePower(RandomUtils.nextLong())
                 .status(CarStatus.FOR_RENT)
                 .petrol(Petrol.DIESEL)
@@ -104,16 +104,6 @@ public class RentControllerIntegrationTest extends AbstractWebIntegrationTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.transaction.car.status").value(CarStatus.RENTED.name()))
                 .andReturn();
     }
-
-    /*Rent addedRent = rentRepository.findOne(1L);
-        assertEquals(RentStatus.RESERVED, addedRent.getStatus());
-        assertEquals(CarStatus.RENTED, addedRent.getCar().getStatus());
-        assertEquals(car.getId(), addedRent.getCar().getId());
-        assertEquals(car.getRentCostPerDay(), addedRent.getCostPerDay());
-        Payment payment = paymentRepository.findOne(1L);
-        assertEquals(PaymentStatus.WAITING, payment.getStatus());
-        assertEquals(addedRent, payment.getTransaction());
-        assertEquals(TransactionType.RENT, payment.getTransactionType());*/
 
     @Test
     public void rentCar_NotForRent_Test() throws Exception {

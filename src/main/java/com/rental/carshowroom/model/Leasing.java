@@ -23,7 +23,6 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Leasing extends Transaction {
 
     @Min(1)
@@ -49,7 +48,7 @@ public class Leasing extends Transaction {
     private LocalDateTime startDate;
 
     @Enumerated(EnumType.STRING)
-    private LeasingStatus leasingStatus = LeasingStatus.WAITING;
+    private LeasingStatus status = LeasingStatus.WAITING;
 
     @Min(value = 24, groups = {CalculateLeasingValidationGroup.class})
     @NotNull(groups = {CalculateLeasingValidationGroup.class})
@@ -62,4 +61,18 @@ public class Leasing extends Transaction {
     @NumberFormat(style = NumberFormat.Style.CURRENCY)
     private BigDecimal initialPayment;
 
+
+    @Builder
+    public Leasing(Long id, Car car, User user, BigDecimal pricePerOneInstallment, LocalDate expectedStartDate, LocalDate endDate, LocalDateTime returnDate, LocalDateTime startDate, LeasingStatus status, Long installments, Long installmentsPaid, BigDecimal initialPayment) {
+        super(id, car, user);
+        this.pricePerOneInstallment = pricePerOneInstallment;
+        this.expectedStartDate = expectedStartDate;
+        this.endDate = endDate;
+        this.returnDate = returnDate;
+        this.startDate = startDate;
+        this.status = status;
+        this.installments = installments;
+        this.installmentsPaid = installmentsPaid;
+        this.initialPayment = initialPayment;
+    }
 }

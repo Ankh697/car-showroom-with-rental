@@ -28,7 +28,7 @@ public class LeasingService {
     private String initialPaymentError;
     @Value("${msg.validation.car.notforlease")
     private String carNotForLease;
-    @Value("${msg.validation.leasing.leasinglenght")
+    @Value("${msg.validation.leasing.lenght")
     private String leasingLenghth;
 
     private LeasingRepository leasingRepository;
@@ -70,7 +70,8 @@ public class LeasingService {
     private Leasing prepareLeasing(Leasing leasing) {
         leasing.setCar(carService.getCar(leasing.getCar().getId()));
         leasing.setEndDate(leasing.getExpectedStartDate().plusMonths(leasing.getInstallments()));
-        leasing.setLeasingStatus(LeasingStatus.WAITING);
+        leasing.setStatus(LeasingStatus.WAITING);
+        leasing.getCar().setStatus(CarStatus.LEASED);
         return leasingRepository.save(leasing);
     }
 
@@ -89,7 +90,7 @@ public class LeasingService {
 
     public Leasing cancelLeasing(Long id) {
         Leasing leasing = findLeasing(id);
-        leasing.setLeasingStatus(LeasingStatus.CANCELLED);
+        leasing.setStatus(LeasingStatus.CANCELLED);
         leasing.getCar().setStatus(CarStatus.FOR_SALE);
         return leasingRepository.save(leasing);
     }
@@ -98,6 +99,7 @@ public class LeasingService {
         Leasing leasing = findLeasing(id);
         leasing.setEndDate(LocalDate.now());
         leasing.getCar().setStatus(CarStatus.FOR_SALE);
+        leasing.setStatus(LeasingStatus.FINISHED);
         return leasingRepository.save(leasing);
     }
 }
