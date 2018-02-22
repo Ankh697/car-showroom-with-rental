@@ -54,9 +54,9 @@ public class OAuthIntegrationTest extends AbstractWebIntegrationTest {
     @Test
     public void authenticate_Positive_Test() throws Exception {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("grant_type", "password");
+        params.add("grant_type", "email.password");
         params.add("username", user.getUsername());
-        params.add("password", user.getPassword());
+        params.add("email.password", user.getPassword());
         user.setPassword(encoder.encode(user.getPassword()));
         userRepository.save(user);
         mockMvc.perform(post("/oauth/token")
@@ -74,9 +74,9 @@ public class OAuthIntegrationTest extends AbstractWebIntegrationTest {
     @Test
     public void authenticate_Disabled_Test() throws Exception {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("grant_type", "password");
+        params.add("grant_type", "email.password");
         params.add("username", user.getUsername());
-        params.add("password", user.getPassword());
+        params.add("email.password", user.getPassword());
         user.setPassword(encoder.encode(user.getPassword()));
         user.setStatus(UserStatus.INACTIVE);
         userRepository.save(user);
@@ -94,9 +94,9 @@ public class OAuthIntegrationTest extends AbstractWebIntegrationTest {
     @Test
     public void authenticate_Banned_Test() throws Exception {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("grant_type", "password");
+        params.add("grant_type", "email.password");
         params.add("username", user.getUsername());
-        params.add("password", user.getPassword());
+        params.add("email.password", user.getPassword());
         user.setPassword(encoder.encode(user.getPassword()));
         user.setStatus(UserStatus.BANNED);
         userRepository.save(user);
@@ -114,9 +114,9 @@ public class OAuthIntegrationTest extends AbstractWebIntegrationTest {
     @Test
     public void authenticate_BannedTemporary_Test() throws Exception {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("grant_type", "password");
+        params.add("grant_type", "email.password");
         params.add("username", user.getUsername());
-        params.add("password", user.getPassword());
+        params.add("email.password", user.getPassword());
         user.setPassword(encoder.encode(user.getPassword()));
         user.setStatus(UserStatus.BANNED_TEMPORARY);
         userRepository.save(user);

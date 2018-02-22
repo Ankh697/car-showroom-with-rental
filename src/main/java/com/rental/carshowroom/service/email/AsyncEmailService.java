@@ -1,30 +1,24 @@
 package com.rental.carshowroom.service.email;
 
-import com.rental.carshowroom.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AsyncEmailService implements EmailService {
-
-    private final JavaMailSender mailSender;
-
+@Lazy
+@Qualifier("async")
+public class AsyncEmailService extends EmailService {
     @Autowired
     public AsyncEmailService(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
+        super(mailSender);
     }
 
     @Override
     @Async
-    public void sendEmail(User user, String subject, String message) {
-        SimpleMailMessage email = new SimpleMailMessage();
-        email.setTo(user.getEmail());
-        email.setSubject(subject);
-        email.setText(message);
-        mailSender.send(email);
+    public void sendEmail(String subject, String message, String... to) {
+        super.sendEmail(subject, message, to);
     }
-
 }

@@ -42,12 +42,13 @@ public class CarController {
     }
 
     @GetMapping("/buy")
-    public ResponseEntity<List<Car>> getAllAviableCarsToLeaseOrBuy() {
+    public ResponseEntity<List<Car>> getCarsToLeaseOrBuy() {
+
         return ResponseEntity.ok(carService.findAllAvailableCarsToLeaseOrBuy());
     }
 
     @GetMapping("/rent")
-    public ResponseEntity<List<Car>> getAllAvaibleCarsToRent() {
+    public ResponseEntity<List<Car>> getCarsToRent() {
         return ResponseEntity.ok(carService.findAllAvailableCarsToRent());
     }
 

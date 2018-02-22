@@ -1,7 +1,20 @@
 package com.rental.carshowroom.service.email;
 
-import com.rental.carshowroom.model.User;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 
-public interface EmailService {
-    void sendEmail(User user, String subject, String message);
+public abstract class EmailService {
+    private final JavaMailSender mailSender;
+
+    public EmailService(JavaMailSender mailSender) {
+        this.mailSender = mailSender;
+    }
+
+    public void sendEmail(String subject, String message, String... to) {
+        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+        simpleMailMessage.setTo(to);
+        simpleMailMessage.setSubject(subject);
+        simpleMailMessage.setText(message);
+        mailSender.send(simpleMailMessage);
+    }
 }

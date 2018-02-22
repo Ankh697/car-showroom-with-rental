@@ -12,13 +12,12 @@ import java.util.Properties;
 
 @Configuration
 @PropertySource("classpath:email.properties")
+public class EmailConfig {
 
-public class ApplicationConfig {
+    @Value("${email.address}")
+    private String emailAddress;
 
-    @Value("${address}")
-    private String emailAdress;
-
-    @Value("${password}")
+    @Value("${email.password}")
     private String password;
 
     @Bean
@@ -28,7 +27,7 @@ public class ApplicationConfig {
         sender.setProtocol("smtp");
         sender.setHost("smtp.gmail.com");
         sender.setPort(587);
-        sender.setUsername(emailAdress);
+        sender.setUsername(emailAddress);
         sender.setPassword(password);
         Properties properties = new Properties();
         properties.put("mail.smtp.auth", true);
@@ -36,5 +35,4 @@ public class ApplicationConfig {
         sender.setJavaMailProperties(properties);
         return sender;
     }
-
 }
